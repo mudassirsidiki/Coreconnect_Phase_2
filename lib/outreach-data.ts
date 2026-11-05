@@ -43,15 +43,22 @@ export interface CallLog {
   notes: string
 }
 
+export interface MeetingItem {
+  type: 'New Meeting' | 'Follow-up Meeting'
+  date: string
+  time?: string
+}
+
 export interface ScheduledMeetingDetails {
   meetingDate: string
   meetingTime: string
-  followUpMeetingDate: string
+  followUpMeetingDate?: string
   type: 'New Meeting' | 'Follow-up Meeting'
   status: 'Scheduled' | 'Confirmed' | 'Completed'
   agenda: string
   attendees: string
   location: string
+  meetingsList?: MeetingItem[]
 }
 
 export interface ResponseLeadRecord {
@@ -63,13 +70,17 @@ export interface ResponseLeadRecord {
   email: string
   responseDate: string
   channel: Channel
+  outreachType?: 'New Outreach' | 'Follow-up'
   response: 'Positive' | 'Negative' | 'Prospect'
   actionStatus: string
   industry: Industry
   region: Region
   meetingsScheduled?: string
   meetingDetails?: ScheduledMeetingDetails
+  leadOwner?: string
 }
+
+export const leadTeamMembers = ['Bilal Tahir', 'Batool Fatima', 'Kinza Imran', 'Umar Shazad']
 
 const companies = [
   'Meridian Bank', 'Northstar Health', 'Pinnacle Retail Group', 'BluePeak Energy',
@@ -298,66 +309,155 @@ const negativeActionStatuses = [
   'Project Postponed to 2027'
 ]
 
-// Generate Response Leads
-export const seedResponseLeads: ResponseLeadRecord[] = Array.from({ length: 90 }, (_, i) => {
-  const sentimentIndex = i % 3
-  const sentiment: 'Positive' | 'Negative' | 'Prospect' = sentimentIndex === 0 ? 'Positive' : (sentimentIndex === 1 ? 'Prospect' : 'Negative')
-  const account = companies[i % companies.length]
-  const leadName = `${firstNames[i % firstNames.length]} ${lastNames[i % lastNames.length]}`
-  const title = titles[i % titles.length]
-  const email = `${firstNames[i % firstNames.length].toLowerCase()}.${lastNames[i % lastNames.length].toLowerCase()}@${account.toLowerCase().replace(/[^a-z0-9]/g, '')}.com`
-  const industry = industries[i % industries.length]
-  const region = industryRegionMap[industry]
-  const channel = channels[i % channels.length]
+// Generate Response Leads (High-performing outreach: 21 Positive, 6 Prospect, 3 Negative = 70% Positive Rate)
+export const seedResponseLeads: ResponseLeadRecord[] = (() => {
+  const records: ResponseLeadRecord[] = []
+  const positiveChannels: Channel[] = ['Email', 'LinkedIn', 'Call', 'Email', 'Call', 'LinkedIn', 'LinkedIn', 'Email', 'Call', 'Email']
+  const prospectChannels: Channel[] = ['LinkedIn', 'Email', 'Call', 'LinkedIn', 'Email', 'Call', 'LinkedIn', 'Call', 'Email', 'LinkedIn']
+  const negativeChannels: Channel[] = ['Call', 'Email', 'LinkedIn', 'Call', 'LinkedIn', 'Email', 'Call', 'Email', 'LinkedIn', 'Call']
 
-  const leadAddedOffset = -30 - (i % 60)
-  const responseOffset = leadAddedOffset + 5 + (i % 15)
+  let emailPositiveCount = 0
+  let emailProspectCount = 0
+  let emailNegativeCount = 0
 
-  let actionStatus = ''
-  let meetingsScheduled: string | undefined = undefined
-  let meetingDetails: ScheduledMeetingDetails | undefined = undefined
+  // 1. Positive Responses (21 leads -> 70% positive rate)
+  for (let i = 0; i < 21; i++) {
+    const account = companies[i % companies.length]
+    const leadName = `${firstNames[i % firstNames.length]} ${lastNames[i % lastNames.length]}`
+    const title = titles[i % titles.length]
+    const email = `${firstNames[i % firstNames.length].toLowerCase()}.${lastNames[i % lastNames.length].toLowerCase()}@${account.toLowerCase().replace(/[^a-z0-9]/g, '')}.com`
+    const industry = industries[i % industries.length]
+    const region = industryRegionMap[industry]
+    const channel = positiveChannels[i % positiveChannels.length]
+    const leadAddedOffset = -22 - ((i * 2) % 30)
+    const responseOffset = leadAddedOffset + 3 + (i % 4)
 
-  if (sentiment === 'Positive') {
-    actionStatus = positiveActionStatuses[i % positiveActionStatuses.length]
-    meetingsScheduled = i % 3 === 0 ? '2 Meetings' : '1 Meeting'
-    const isFollowUpType = i % 2 === 0
+    let outreachType: 'New Outreach' | 'Follow-up' = i % 2 === 0 ? 'New Outreach' : 'Follow-up'
+    if (channel === 'Email') {
+      outreachType = emailPositiveCount % 2 === 0 ? 'New Outreach' : 'Follow-up'
+      emailPositiveCount++
+    }
 
-    // Schedule meetings around October 2026 (day 1 to 31)
+    const hasTwoMeetings = i % 3 === 0
+    const primaryType: 'New Meeting' | 'Follow-up Meeting' = i % 2 === 0 ? 'New Meeting' : 'Follow-up Meeting'
+    const secondaryType: 'New Meeting' | 'Follow-up Meeting' = primaryType === 'New Meeting' ? 'Follow-up Meeting' : 'New Meeting'
     const meetingDayOffset = ((i * 3) % 25) - 10
     const followUpOffset = meetingDayOffset + 7 + (i % 7)
+    const primaryDate = getDateStr(meetingDayOffset)
+    const secondaryDate = getDateStr(followUpOffset)
 
-    meetingDetails = {
-      meetingDate: getDateStr(meetingDayOffset),
-      meetingTime: `${10 + (i % 6)}:00 ${i % 2 === 0 ? 'AM' : 'PM'}`,
-      followUpMeetingDate: getDateStr(followUpOffset),
-      type: isFollowUpType ? 'Follow-up Meeting' : 'New Meeting',
-      status: i % 4 === 0 ? 'Completed' : (i % 4 === 1 ? 'Confirmed' : 'Scheduled'),
-      agenda: isFollowUpType
-        ? 'Deep-dive architectural review, security review, and enterprise licensing terms.'
-        : 'Initial discovery, operational pain points discovery, and Coreconnect V2 capabilities overview.',
-      attendees: `${leadName} (${title}), VP Engineering, Account Executive, Solutions Architect`,
-      location: i % 2 === 0 ? 'Microsoft Teams Video Call' : 'Zoom Conference Room A'
+    const meetingsList: MeetingItem[] = hasTwoMeetings
+      ? [
+        { type: primaryType, date: primaryDate },
+        { type: secondaryType, date: secondaryDate }
+      ]
+      : [
+        { type: primaryType, date: primaryDate }
+      ]
+
+    records.push({
+      id: records.length + 1,
+      leadAddedDate: getDateStr(leadAddedOffset),
+      account,
+      leadName,
+      title,
+      email,
+      responseDate: getDateStr(responseOffset),
+      channel,
+      outreachType,
+      response: 'Positive',
+      actionStatus: positiveActionStatuses[i % positiveActionStatuses.length],
+      industry,
+      region,
+      leadOwner: leadTeamMembers[i % leadTeamMembers.length],
+      meetingsScheduled: hasTwoMeetings ? '2 Meetings' : '1 Meeting',
+      meetingDetails: {
+        meetingDate: primaryDate,
+        meetingTime: `${10 + (i % 6)}:00 ${i % 2 === 0 ? 'AM' : 'PM'}`,
+        followUpMeetingDate: hasTwoMeetings ? secondaryDate : undefined,
+        type: primaryType,
+        status: i % 4 === 0 ? 'Completed' : (i % 4 === 1 ? 'Confirmed' : 'Scheduled'),
+        agenda: primaryType === 'Follow-up Meeting'
+          ? 'Deep-dive architectural review, security review, and enterprise licensing terms.'
+          : 'Initial discovery, operational pain points discovery, and Coreconnect V2 capabilities overview.',
+        attendees: `${leadName} (${title}), VP Engineering, Account Executive, Solutions Architect`,
+        location: i % 2 === 0 ? 'Microsoft Teams Video Call' : 'Zoom Conference Room A',
+        meetingsList
+      }
+    })
+  }
+
+  // 2. Prospect Responses (6 leads)
+  for (let i = 0; i < 6; i++) {
+    const account = companies[(i + 10) % companies.length]
+    const leadName = `${firstNames[(i + 5) % firstNames.length]} ${lastNames[(i + 4) % lastNames.length]}`
+    const title = titles[(i + 3) % titles.length]
+    const email = `${firstNames[(i + 5) % firstNames.length].toLowerCase()}.${lastNames[(i + 4) % lastNames.length].toLowerCase()}@${account.toLowerCase().replace(/[^a-z0-9]/g, '')}.com`
+    const industry = industries[(i + 2) % industries.length]
+    const region = industryRegionMap[industry]
+    const channel = prospectChannels[i % prospectChannels.length]
+    const leadAddedOffset = -25 - (i * 3)
+    const responseOffset = leadAddedOffset + 4 + (i % 5)
+
+    let outreachType: 'New Outreach' | 'Follow-up' = i % 2 === 0 ? 'New Outreach' : 'Follow-up'
+    if (channel === 'Email') {
+      outreachType = emailProspectCount % 2 === 0 ? 'New Outreach' : 'Follow-up'
+      emailProspectCount++
     }
-  } else if (sentiment === 'Prospect') {
-    actionStatus = prospectActionStatuses[i % prospectActionStatuses.length]
-  } else {
-    actionStatus = negativeActionStatuses[i % negativeActionStatuses.length]
+
+    records.push({
+      id: records.length + 1,
+      leadAddedDate: getDateStr(leadAddedOffset),
+      account,
+      leadName,
+      title,
+      email,
+      responseDate: getDateStr(responseOffset),
+      channel,
+      outreachType,
+      response: 'Prospect',
+      actionStatus: prospectActionStatuses[i % prospectActionStatuses.length],
+      industry,
+      region,
+      leadOwner: leadTeamMembers[(i + 1) % leadTeamMembers.length]
+    })
   }
 
-  return {
-    id: i + 1,
-    leadAddedDate: getDateStr(leadAddedOffset),
-    account,
-    leadName,
-    title,
-    email,
-    responseDate: getDateStr(responseOffset),
-    channel,
-    response: sentiment,
-    actionStatus,
-    industry,
-    region,
-    meetingsScheduled,
-    meetingDetails
+  // 3. Negative Responses (3 leads)
+  for (let i = 0; i < 3; i++) {
+    const account = companies[(i + 5) % companies.length]
+    const leadName = `${firstNames[(i + 8) % firstNames.length]} ${lastNames[(i + 7) % lastNames.length]}`
+    const title = titles[(i + 5) % titles.length]
+    const email = `${firstNames[(i + 8) % firstNames.length].toLowerCase()}.${lastNames[(i + 7) % lastNames.length].toLowerCase()}@${account.toLowerCase().replace(/[^a-z0-9]/g, '')}.com`
+    const industry = industries[(i + 4) % industries.length]
+    const region = industryRegionMap[industry]
+    const channel = negativeChannels[i % negativeChannels.length]
+    const leadAddedOffset = -28 - (i * 2)
+    const responseOffset = leadAddedOffset + 2 + (i % 4)
+
+    let outreachType: 'New Outreach' | 'Follow-up' = i % 2 === 0 ? 'New Outreach' : 'Follow-up'
+    if (channel === 'Email') {
+      outreachType = emailNegativeCount % 2 === 0 ? 'New Outreach' : 'Follow-up'
+      emailNegativeCount++
+    }
+
+    records.push({
+      id: records.length + 1,
+      leadAddedDate: getDateStr(leadAddedOffset),
+      account,
+      leadName,
+      title,
+      email,
+      responseDate: getDateStr(responseOffset),
+      channel,
+      outreachType,
+      response: 'Negative',
+      actionStatus: negativeActionStatuses[i % negativeActionStatuses.length],
+      industry,
+      region,
+      leadOwner: leadTeamMembers[(i + 2) % leadTeamMembers.length]
+    })
   }
-})
+
+  return records
+})()
