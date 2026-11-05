@@ -23,6 +23,7 @@ import { RfpSection } from '@/components/rfp/RfpSection'
 import { RfpAnalysisPage } from '@/components/rfp/RfpAnalysisPage'
 import { ResponsesSection } from '@/components/responses/ResponsesSection'
 import { ResponsesAnalysisPage } from '@/components/responses/ResponsesAnalysisPage'
+import { RevenuePipelinePage } from '@/components/revenue/RevenuePipelinePage'
 import { type OpportunityStage } from '@/lib/opportunities-data'
 
 export const dashboardSections = [
@@ -414,7 +415,20 @@ export default function Page() {
             onBackToDashboard={() => setPage('Dashboard')}
           />}
           {page==='Account Business Plans'&&<BusinessPlans onBackToDashboard={()=>setPage('Dashboard')}/>}
-          {page==='Revenue Pipeline & Sales'&&<Revenue wins={filteredWins} onBackToDashboard={()=>setPage('Dashboard')}/>}
+          {page==='Revenue Pipeline & Sales'&&<RevenuePipelinePage
+            wins={filteredWins}
+            selectedIndustry={selectedIndustry}
+            setSelectedIndustry={setSelectedIndustry}
+            selectedRegion={selectedRegion}
+            setSelectedRegion={setSelectedRegion}
+            startDate={startDate}
+            setStartDate={setStartDate}
+            endDate={endDate}
+            setEndDate={setEndDate}
+            datePreset={datePreset}
+            setDatePreset={setDatePreset}
+            onBackToDashboard={()=>setPage('Dashboard')}
+          />}
           {page==='Account Management Activities'&&<Activities support={support} setSupport={setSupport} conferences={conferences} setConferences={setConferences} onBackToDashboard={()=>setPage('Dashboard')}/>}
           {page==='Documents'&&<Documents onBackToDashboard={()=>setPage('Dashboard')}/>}
           {page==='Proposals'&&<Proposals onBackToDashboard={()=>setPage('Dashboard')}/>}
@@ -847,14 +861,6 @@ function Field({label,value}:{label:string;value:string}){return <label classNam
 
 function BusinessPlans({onBackToDashboard}:{onBackToDashboard?:()=>void}){
   return <div className="min-h-[400px]" />
-}
-function Revenue({wins,onBackToDashboard}:{wins:any[];onBackToDashboard?:()=>void}){
-  return (
-    <div className="flex flex-col gap-6">
-      <SectionTitle eyebrow="Sales" title="Revenue pipeline & sales" onBack={onBackToDashboard}/>
-      <DataTable title="Business wins" rows={wins} columns={['account','lead','value','meetingDate','dateWon','region','industry']}/>
-    </div>
-  )
 }
 function Activities({support,setSupport,conferences,setConferences,onBackToDashboard}:{support:any[];setSupport:(x:any)=>void;conferences:any[];setConferences:(x:any)=>void;onBackToDashboard?:()=>void}){return <div className="flex flex-col gap-6"><SectionTitle eyebrow="Enablement" title="Account management activities" onBack={onBackToDashboard}/><div className="grid gap-6 lg:grid-cols-2"><Card><CardHeader className="flex-row items-center justify-between"><CardTitle>CRM support</CardTitle><Button size="sm" onClick={()=>{setSupport([{id:Date.now(),date:new Date().toISOString().slice(0,10),location:'Virtual',name:'New support session',website:'www.example.com',industry:'Technology'},...support]);toast.success('Support record added')}}><Plus/>Add</Button></CardHeader><CardContent><DataTable title="" rows={support} columns={['date','location','name','industry']}/></CardContent></Card><Card><CardHeader className="flex-row items-center justify-between"><CardTitle>Conferences</CardTitle><Button size="sm" onClick={()=>{setConferences([{id:Date.now(),date:new Date().toISOString().slice(0,10),status:'Planned',category:'Industry',description:'New conference',actionPlan:'Assign owner'},...conferences]);toast.success('Conference added')}}><Plus/>Add</Button></CardHeader><CardContent><DataTable title="" rows={conferences} columns={['date','status','category','description']}/></CardContent></Card></div></div>}
 function Documents({onBackToDashboard}:{onBackToDashboard?:()=>void}){const [target,setTarget]=useState('USA'); return <div className="flex flex-col gap-6"><SectionTitle eyebrow="Content" title="Documents" onBack={onBackToDashboard}/><div className="grid gap-4 md:grid-cols-3"><Card><CardContent className="p-6"><FileText className="mb-5 text-[#FFC000]"/><h3 className="font-semibold">GTM strategy</h3><p className="mt-1 text-sm text-muted-foreground">Editable go-to-market planning grid.</p><Button className="mt-5" onClick={()=>toast.success('GTM spreadsheet downloaded')}><Download/>Download</Button></CardContent></Card><Card><CardContent className="p-6"><Mail className="mb-5 text-[#FFC000]"/><h3 className="font-semibold">Email drafts</h3><Select value={target} onValueChange={setTarget}><SelectTrigger className="mt-4"><SelectValue/></SelectTrigger><SelectContent>{regions.map(x=><SelectItem value={x} key={x}>{x}</SelectItem>)}</SelectContent></Select><div className="mt-4 rounded border bg-slate-50 p-3 text-xs whitespace-pre-line dark:bg-slate-900">{emailDraft(target)}</div><Button variant="outline" className="mt-3" onClick={()=>toast.success('Draft copied')}>Copy draft</Button></CardContent></Card><Card><CardContent className="p-6"><Presentation className="mb-5 text-[#FFC000]"/><h3 className="font-semibold">Proposals</h3><p className="mt-1 text-sm text-muted-foreground">Manage proposal documents and outcomes.</p><Button className="mt-5" onClick={()=>toast.success('Navigate to Proposals from sidebar')}>Open proposals</Button></CardContent></Card></div><Card><CardHeader><CardTitle>GTM spreadsheet</CardTitle></CardHeader><CardContent><div className="overflow-x-auto"><table className="w-full text-sm">{gtmRows.map((row,i)=><tr key={i} className={i===0?'bg-[#0B1F5C] text-white':''}>{row.map((cell,j)=><td key={j} className="border p-3">{i===0?cell:<Input defaultValue={cell} className="border-0 bg-transparent"/>}</td>)}</tr>)}</table></div></CardContent></Card></div>}
