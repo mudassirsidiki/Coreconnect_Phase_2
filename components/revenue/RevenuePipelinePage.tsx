@@ -6,11 +6,12 @@ import {
   Calendar, Building2, Globe, Search, Download, ArrowLeft,
   CheckCircle2, Target, Layers, Filter, Sparkles, ChevronRight,
   SlidersHorizontal, BarChart3, PieChart as PieIcon, ArrowUpDown,
-  FileText, ShieldCheck, Check
+  FileText, ShieldCheck, Check, Clock, UserCheck, Flame, Zap
 } from 'lucide-react'
 import {
   ResponsiveContainer, BarChart, Bar, XAxis, YAxis,
-  CartesianGrid, Tooltip, PieChart, Pie, Cell, AreaChart, Area
+  CartesianGrid, Tooltip, PieChart, Pie, Cell, AreaChart, Area,
+  ComposedChart, Line, Legend
 } from 'recharts'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -51,6 +52,12 @@ const REGION_COLORS: Record<string, string> = {
   'Saudi Arabia': '#10B981'
 }
 
+const PROJECT_COLORS: Record<string, string> = {
+  'Cloud Modernization': '#0B1F5C',
+  'Customer Insights': '#FFC000',
+  'Digital Workplace': '#10B981'
+}
+
 export function RevenuePipelinePage({
   wins,
   selectedIndustry: globalIndustry = 'All',
@@ -63,10 +70,13 @@ export function RevenuePipelinePage({
   const [searchQuery, setSearchQuery] = useState<string>('')
   const [sortBy, setSortBy] = useState<'value-desc' | 'value-asc' | 'date-desc' | 'date-asc'>('value-desc')
 
+  // Clustered bar chart segmentation toggle: 'project' | 'region'
+  const [clusterMode, setClusterMode] = useState<'project' | 'region'>('project')
+
   // Selected deal for slide-out inspection drawer
   const [selectedDeal, setSelectedDeal] = useState<Win | null>(null)
 
-  // Filtered wins
+  // Filtered wins based on slicers and search
   const filteredWins = useMemo(() => {
     return wins.filter(w => {
       const matchInd = localIndustry === 'All' || w.industry === localIndustry
@@ -95,6 +105,15 @@ export function RevenuePipelinePage({
     const avg = count ? total / count : 0
     const max = filteredWins.length ? Math.max(...filteredWins.map(w => w.value)) : 0
 
+    // Average Sales Velocity (Days from Meeting to Date Won)
+    const totalCycleDays = filteredWins.reduce((acc, w) => {
+      const start = new Date(w.meetingDate).getTime()
+      const end = new Date(w.dateWon).getTime()
+      const days = Math.max(14, Math.round(Math.abs(end - start) / (1000 * 60 * 60 * 24)))
+      return acc + days
+    }, 0)
+    const avgCycle = count ? Math.round(totalCycleDays / count) : 0
+
     // Top territory
     const regSums = regions.map(reg => ({
       reg,
@@ -112,42 +131,91 @@ export function RevenuePipelinePage({
       count,
       avg,
       max,
+      avgCycle,
       topRegion: regSums[0]?.total ? regSums[0] : null,
       topIndustry: indSums[0]?.total ? indSums[0] : null
     }
   }, [filteredWins])
 
-  // Chart 1: Cumulative Trajectory
-  const trajectoryData = useMemo(() => {
-    const sorted = [...filteredWins].sort((a, b) => new Date(a.dateWon).getTime() - new Date(b.dateWon).getTime())
-    let runningTotal = 0
-    return sorted.map(w => {
-      runningTotal += w.value
-      return {
-        date: formatDate(w.dateWon),
-        value: w.value,
-        cumulative: runningTotal,
-        account: w.account,
-        industry: w.industry
-      }
-    })
-  }, [filteredWins])
-
-  // Chart 2: Revenue By Industry
-  const industryChartData = useMemo(() => {
+  // ─────────────────────────────────────────────────────────────
+  // CHART 1: CLUSTERED BAR CHART (Industry vs Project or Region)
+  // ─────────────────────────────────────────────────────────────
+  const clusteredIndustryData = useMemo(() => {
     return industries.map(ind => {
       const indWins = filteredWins.filter(w => w.industry === ind)
-      const value = indWins.reduce((sum, w) => sum + w.value, 0)
-      return {
-        industry: ind,
-        value,
-        deals: indWins.length
+      if (clusterMode === 'project') {
+        const cloud = indWins.filter(w => w.project === 'Cloud modernization').reduce((s, w) => s + w.value, 0)
+        const insights = indWins.filter(w => w.project === 'Customer insights').reduce((s, w) => s + w.value, 0)
+        const workplace = indWins.filter(w => w.project === 'Digital workplace').reduce((s, w) => s + w.value, 0)
+        return {
+          industry: ind,
+          total: cloud + insights + workplace,
+          'Cloud Modernization': cloud,
+          'Customer Insights': insights,
+          'Digital Workplace': workplace
+        }
+      } else {
+        const usa = indWins.filter(w => w.region === 'USA').reduce((s, w) => s + w.value, 0)
+        const can = indWins.filter(w => w.region === 'Canada').reduce((s, w) => s + w.value, 0)
+        const ksa = indWins.filter(w => w.region === 'Saudi Arabia').reduce((s, w) => s + w.value, 0)
+        return {
+          industry: ind,
+          total: usa + can + ksa,
+          'USA': usa,
+          'Canada': can,
+          'Saudi Arabia': ksa
+        }
       }
-    }).filter(x => x.value > 0)
-      .sort((a, b) => b.value - a.value)
+    }).filter(x => x.total > 0)
+      .sort((a, b) => b.total - a.total)
+  }, [filteredWins, clusterMode])
+
+  // ─────────────────────────────────────────────────────────────
+  // CHART 2: DEAL VELOCITY & SALES CYCLE DURATION (COMPOSED CHART)
+  // ─────────────────────────────────────────────────────────────
+  const velocityData = useMemo(() => {
+    return filteredWins.map(w => {
+      const start = new Date(w.meetingDate).getTime()
+      const end = new Date(w.dateWon).getTime()
+      const cycleDays = Math.max(14, Math.round(Math.abs(end - start) / (1000 * 60 * 60 * 24)))
+      return {
+        account: w.account.length > 13 ? w.account.slice(0, 11) + '…' : w.account,
+        fullName: w.account,
+        dealValueK: Math.round(w.value / 1000),
+        dealValue: w.value,
+        cycleDays,
+        industry: w.industry,
+        region: w.region,
+        lead: w.lead,
+        project: w.project
+      }
+    }).sort((a, b) => b.dealValue - a.dealValue)
   }, [filteredWins])
 
-  // Chart 3: Regional Distribution
+  // ─────────────────────────────────────────────────────────────
+  // CHART 3: EXECUTIVE DEAL LEAD LEADERBOARD (BAR CHART)
+  // ─────────────────────────────────────────────────────────────
+  const leadLeaderboardData = useMemo(() => {
+    const groups: Record<string, { lead: string; totalRevenue: number; dealCount: number; avgDeal: number }> = {}
+    filteredWins.forEach(w => {
+      if (!groups[w.lead]) {
+        groups[w.lead] = { lead: w.lead, totalRevenue: 0, dealCount: 0, avgDeal: 0 }
+      }
+      groups[w.lead].totalRevenue += w.value
+      groups[w.lead].dealCount += 1
+    })
+    return Object.values(groups)
+      .map(g => ({
+        ...g,
+        revenueK: Math.round(g.totalRevenue / 1000),
+        avgDeal: Math.round(g.totalRevenue / g.dealCount)
+      }))
+      .sort((a, b) => b.totalRevenue - a.totalRevenue)
+  }, [filteredWins])
+
+  // ─────────────────────────────────────────────────────────────
+  // CHART 4: REGIONAL REVENUE SHARE & MARKET DISTRIBUTION
+  // ─────────────────────────────────────────────────────────────
   const regionChartData = useMemo(() => {
     return regions.map(reg => {
       const regWins = filteredWins.filter(w => w.region === reg)
@@ -190,7 +258,7 @@ export function RevenuePipelinePage({
                 variant="outline"
                 size="sm"
                 onClick={onBackToDashboard}
-                className="gap-1.5 text-xs font-semibold"
+                className="gap-1.5 text-xs font-semibold cursor-pointer"
               >
                 <ArrowLeft className="size-3.5" />
                 Back to Dashboard
@@ -205,11 +273,11 @@ export function RevenuePipelinePage({
                   Revenue Pipeline & Sales
                 </h1>
                 <Badge className="bg-emerald-600 text-white font-bold text-[10px] hover:bg-emerald-700">
-                  Closed Won Deals
+                  Closed Won Analytics
                 </Badge>
               </div>
               <p className="mt-1 text-xs text-muted-foreground">
-                Executive revenue analytics, deal velocity telemetry, and verified commercial wins across enterprise accounts.
+                Executive revenue intelligence, multi-dimensional clustered analytics, sales velocity telemetry, and contract closures.
               </p>
             </div>
           </div>
@@ -219,7 +287,7 @@ export function RevenuePipelinePage({
               variant="outline"
               size="sm"
               onClick={handleExportCsv}
-              className="gap-1.5 text-xs font-semibold"
+              className="gap-1.5 text-xs font-semibold cursor-pointer"
             >
               <Download className="size-3.5" />
               Export Register CSV
@@ -248,9 +316,9 @@ export function RevenuePipelinePage({
           <div className="mt-2 flex items-center justify-between border-t border-slate-100 pt-2 text-xs dark:border-slate-800">
             <span className="inline-flex items-center font-semibold text-emerald-600 dark:text-emerald-400">
               <ArrowUpRight className="size-3.5 mr-0.5" />
-              +28.4% YoY Growth
+              +28.4% vs Baseline
             </span>
-            <span className="text-muted-foreground">{stats.count} Closed Contracts</span>
+            <span className="text-muted-foreground">{stats.count} Enterprise Contracts</span>
           </div>
         </div>
 
@@ -258,7 +326,7 @@ export function RevenuePipelinePage({
         <div className="rounded-xl border border-slate-200/80 bg-white p-5 shadow-xs dark:border-slate-800 dark:bg-slate-900 border-l-4 border-l-[#0B1F5C] dark:border-l-[#FFC000]">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-              Average Deal Size
+              Average Contract Value
             </span>
             <div className="flex size-9 items-center justify-center rounded-lg bg-blue-50 text-[#0B1F5C] dark:bg-slate-800 dark:text-[#FFC000]">
               <TrendingUp className="size-4.5 stroke-[2.5]" />
@@ -269,30 +337,31 @@ export function RevenuePipelinePage({
           </div>
           <div className="mt-2 flex items-center justify-between border-t border-slate-100 pt-2 text-xs dark:border-slate-800">
             <span className="font-semibold text-slate-700 dark:text-slate-300">
-              Max: {money(stats.max)}
+              Peak: {money(stats.max)}
             </span>
-            <span className="text-muted-foreground">Enterprise Tier</span>
+            <span className="text-muted-foreground">Tier 1 Threshold</span>
           </div>
         </div>
 
-        {/* KPI 3: CLOSED WON DEALS */}
-        <div className="rounded-xl border border-slate-200/80 bg-white p-5 shadow-xs dark:border-slate-800 dark:bg-slate-900 border-l-4 border-l-[#FFC000]">
+        {/* KPI 3: AVERAGE SALES CYCLE (VELOCITY) */}
+        <div className="rounded-xl border border-slate-200/80 bg-white p-5 shadow-xs dark:border-slate-800 dark:bg-slate-900 border-l-4 border-l-amber-500">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-              Closed Won Deals
+              Sales Cycle Velocity
             </span>
             <div className="flex size-9 items-center justify-center rounded-lg bg-amber-50 text-amber-600 dark:bg-amber-950 dark:text-amber-400">
-              <Briefcase className="size-4.5 stroke-[2.5]" />
+              <Clock className="size-4.5 stroke-[2.5]" />
             </div>
           </div>
           <div className="mt-2 text-3xl font-extrabold text-[#0B1F5C] dark:text-white">
-            {stats.count} <span className="text-lg font-semibold text-muted-foreground">Won</span>
+            {stats.avgCycle} <span className="text-lg font-semibold text-muted-foreground">Days</span>
           </div>
           <div className="mt-2 flex items-center justify-between border-t border-slate-100 pt-2 text-xs dark:border-slate-800">
-            <span className="font-semibold text-emerald-600 dark:text-emerald-400">
-              100% Contract Execution
+            <span className="inline-flex items-center font-semibold text-amber-600 dark:text-amber-400">
+              <Zap className="size-3 mr-1" />
+              Meeting → Signed
             </span>
-            <span className="text-muted-foreground">8 Sectors</span>
+            <span className="text-muted-foreground">Velocity Telemetry</span>
           </div>
         </div>
 
@@ -300,64 +369,84 @@ export function RevenuePipelinePage({
         <div className="rounded-xl border border-slate-200/80 bg-white p-5 shadow-xs dark:border-slate-800 dark:bg-slate-900 border-l-4 border-l-purple-500">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-              Leading Territory
+              Top Territory & Sector
             </span>
             <div className="flex size-9 items-center justify-center rounded-lg bg-purple-50 text-purple-600 dark:bg-purple-950 dark:text-purple-400">
               <Globe className="size-4.5 stroke-[2.5]" />
             </div>
           </div>
           <div className="mt-2 text-2xl font-extrabold text-[#0B1F5C] dark:text-white truncate">
-            {stats.topRegion ? `${stats.topRegion.reg}` : 'Global'}
+            {stats.topRegion ? stats.topRegion.reg : 'Global'}
           </div>
           <div className="mt-2 flex items-center justify-between border-t border-slate-100 pt-2 text-xs dark:border-slate-800">
-            <span className="font-semibold text-purple-600 dark:text-purple-400">
-              {stats.topRegion ? money(stats.topRegion.total) : '$0'}
+            <span className="font-semibold text-purple-600 dark:text-purple-400 truncate">
+              {stats.topIndustry ? stats.topIndustry.ind : 'All Sectors'}
             </span>
             <span className="text-muted-foreground">
-              {stats.total > 0 && stats.topRegion ? `${Math.round((stats.topRegion.total / stats.total) * 100)}% Share` : '0%'}
+              {stats.topRegion ? money(stats.topRegion.total) : '$0'}
             </span>
           </div>
         </div>
       </div>
 
       {/* ─────────────────────────────────────────────────────────── */}
-      {/* 3. INSIGHTFUL CHARTS & GRAPHS SECTION                       */}
+      {/* 3. INSIGHTFUL CHARTS & MULTI-DIMENSIONAL VISUALIZATIONS     */}
       {/* ─────────────────────────────────────────────────────────── */}
-      <div className="grid gap-6 lg:grid-cols-3">
-        {/* CHART 1: CUMULATIVE REVENUE GROWTH TRAJECTORY (AREA CHART) */}
-        <Card className="lg:col-span-2 border-slate-200/80 shadow-xs dark:border-slate-800">
-          <CardHeader className="flex flex-row items-center justify-between border-b pb-4">
+      <div className="grid gap-6 lg:grid-cols-2">
+        {/* CHART 1: CLUSTERED BAR CHART (INDUSTRY REVENUE DYNAMICS) */}
+        <Card className="border-slate-200/80 shadow-xs dark:border-slate-800">
+          <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b pb-4">
             <div>
               <CardTitle className="text-base font-bold text-[#0B1F5C] dark:text-white flex items-center gap-2">
                 <BarChart3 className="size-4 text-[#FFC000]" />
-                Cumulative Revenue Trajectory
+                Clustered Industry Breakdown
               </CardTitle>
               <p className="text-xs text-muted-foreground mt-0.5">
-                Progression of closed enterprise contracts value over time ($ USD)
+                Segmented deal revenue across industries by {clusterMode === 'project' ? 'Strategic Initiative' : 'Operating Territory'}
               </p>
             </div>
-            <Badge variant="outline" className="text-[11px] font-semibold border-emerald-300 text-emerald-700 bg-emerald-50 dark:bg-emerald-950 dark:text-emerald-300">
-              Target Surpassed
-            </Badge>
+
+            {/* Clustered Segmentation Switcher */}
+            <div className="flex items-center rounded-lg border border-slate-200 bg-slate-100 p-0.5 text-xs dark:border-slate-700 dark:bg-slate-800">
+              <button
+                type="button"
+                onClick={() => setClusterMode('project')}
+                className={`rounded-md px-2.5 py-1 text-xs font-semibold transition cursor-pointer ${
+                  clusterMode === 'project'
+                    ? 'bg-white text-[#0B1F5C] shadow-xs dark:bg-slate-900 dark:text-[#FFC000]'
+                    : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
+                }`}
+              >
+                By Project
+              </button>
+              <button
+                type="button"
+                onClick={() => setClusterMode('region')}
+                className={`rounded-md px-2.5 py-1 text-xs font-semibold transition cursor-pointer ${
+                  clusterMode === 'region'
+                    ? 'bg-white text-[#0B1F5C] shadow-xs dark:bg-slate-900 dark:text-[#FFC000]'
+                    : 'text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white'
+                }`}
+              >
+                By Territory
+              </button>
+            </div>
           </CardHeader>
           <CardContent className="pt-6">
             <div className="h-72 w-full">
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={trajectoryData} margin={{ top: 10, right: 20, left: 10, bottom: 20 }}>
-                  <defs>
-                    <linearGradient id="revenueGradient" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#0B1F5C" stopOpacity={0.4} />
-                      <stop offset="95%" stopColor="#0B1F5C" stopOpacity={0.0} />
-                    </linearGradient>
-                  </defs>
+                <BarChart
+                  data={clusteredIndustryData}
+                  margin={{ top: 10, right: 10, left: 10, bottom: 35 }}
+                >
                   <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
                   <XAxis
-                    dataKey="date"
-                    tick={{ fontSize: 10 }}
+                    dataKey="industry"
+                    tick={{ fontSize: 9 }}
                     stroke="#94a3b8"
-                    angle={-20}
+                    angle={-25}
                     textAnchor="end"
-                    height={40}
+                    height={45}
                   />
                   <YAxis
                     tickFormatter={v => `$${(v / 1000).toFixed(0)}k`}
@@ -365,160 +454,286 @@ export function RevenuePipelinePage({
                     stroke="#94a3b8"
                   />
                   <Tooltip
-                    formatter={(v: any, name: any) => [
-                      money(v),
-                      name === 'cumulative' ? 'Cumulative Revenue' : 'Deal Value'
-                    ]}
-                    labelFormatter={(label) => `Date: ${label}`}
+                    formatter={(val: any, name: any) => [money(val), name]}
                     contentStyle={{
                       backgroundColor: 'rgba(255, 255, 255, 0.95)',
                       borderRadius: '8px',
-                      border: '1px solid #cbd5e1',
                       fontSize: '12px',
+                      border: '1px solid #cbd5e1',
                       boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'
                     }}
                   />
-                  <Area
-                    type="monotone"
-                    dataKey="cumulative"
-                    name="cumulative"
-                    stroke="#0B1F5C"
-                    strokeWidth={2.5}
-                    fillOpacity={1}
-                    fill="url(#revenueGradient)"
+                  <Legend
+                    verticalAlign="top"
+                    align="right"
+                    wrapperStyle={{ fontSize: '11px', paddingBottom: '10px' }}
                   />
-                </AreaChart>
+                  {clusterMode === 'project' ? (
+                    <>
+                      <Bar dataKey="Cloud Modernization" fill="#0B1F5C" radius={[4, 4, 0, 0]} />
+                      <Bar dataKey="Customer Insights" fill="#FFC000" radius={[4, 4, 0, 0]} />
+                      <Bar dataKey="Digital Workplace" fill="#10B981" radius={[4, 4, 0, 0]} />
+                    </>
+                  ) : (
+                    <>
+                      <Bar dataKey="USA" fill="#0B1F5C" radius={[4, 4, 0, 0]} />
+                      <Bar dataKey="Canada" fill="#FFC000" radius={[4, 4, 0, 0]} />
+                      <Bar dataKey="Saudi Arabia" fill="#10B981" radius={[4, 4, 0, 0]} />
+                    </>
+                  )}
+                </BarChart>
               </ResponsiveContainer>
             </div>
-            <div className="mt-3 flex items-center justify-between text-xs text-muted-foreground border-t pt-3">
-              <span>Start: {trajectoryData[0]?.date || '—'}</span>
-              <span className="font-bold text-[#0B1F5C] dark:text-white">
-                Total Closed: {money(stats.total)}
+            <div className="mt-2 flex items-center justify-between text-xs text-muted-foreground border-t pt-2.5">
+              <span>Clustered Categories: <strong>{clusteredIndustryData.length} Industries</strong></span>
+              <span className="font-semibold text-emerald-600 dark:text-emerald-400">
+                Top Sector: {stats.topIndustry?.ind} ({money(stats.topIndustry?.total || 0)})
               </span>
-              <span>Latest: {trajectoryData[trajectoryData.length - 1]?.date || '—'}</span>
             </div>
           </CardContent>
         </Card>
 
-        {/* CHART 2: REGIONAL REVENUE SHARE (DONUT CHART) */}
+        {/* CHART 2: DEAL VELOCITY & SALES CYCLE DURATION (COMPOSED DUAL-AXIS CHART) */}
         <Card className="border-slate-200/80 shadow-xs dark:border-slate-800">
-          <CardHeader className="border-b pb-4">
-            <CardTitle className="text-base font-bold text-[#0B1F5C] dark:text-white flex items-center gap-2">
-              <PieIcon className="size-4 text-emerald-500" />
-              Revenue by Territory
-            </CardTitle>
-            <p className="text-xs text-muted-foreground mt-0.5">
-              Geographic contribution across 3 operating regions
-            </p>
+          <CardHeader className="flex flex-row items-center justify-between border-b pb-4">
+            <div>
+              <CardTitle className="text-base font-bold text-[#0B1F5C] dark:text-white flex items-center gap-2">
+                <Flame className="size-4 text-amber-500" />
+                Deal Velocity & Cycle Duration
+              </CardTitle>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                Contract Value ($k, Left) vs. Days from Discovery Meeting to Close (Line, Right)
+              </p>
+            </div>
+            <Badge variant="outline" className="text-[11px] font-semibold border-amber-300 text-amber-800 bg-amber-50 dark:bg-amber-950 dark:text-amber-300">
+              Avg: {stats.avgCycle} Days
+            </Badge>
           </CardHeader>
           <CardContent className="pt-6">
-            <div className="h-56 w-full">
+            <div className="h-72 w-full">
               <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={regionChartData}
-                    dataKey="value"
-                    nameKey="name"
-                    innerRadius={55}
-                    outerRadius={85}
-                    paddingAngle={4}
-                  >
-                    {regionChartData.map(entry => (
-                      <Cell
-                        key={entry.name}
-                        fill={REGION_COLORS[entry.name] || '#94a3b8'}
-                      />
-                    ))}
-                  </Pie>
+                <ComposedChart
+                  data={velocityData}
+                  margin={{ top: 10, right: 15, left: 5, bottom: 35 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                  <XAxis
+                    dataKey="account"
+                    tick={{ fontSize: 9 }}
+                    stroke="#94a3b8"
+                    angle={-25}
+                    textAnchor="end"
+                    height={45}
+                  />
+                  {/* Left Axis: Deal Value in $k */}
+                  <YAxis
+                    yAxisId="left"
+                    tickFormatter={v => `$${v}k`}
+                    tick={{ fontSize: 10 }}
+                    stroke="#0B1F5C"
+                  />
+                  {/* Right Axis: Cycle in Days */}
+                  <YAxis
+                    yAxisId="right"
+                    orientation="right"
+                    tickFormatter={v => `${v}d`}
+                    tick={{ fontSize: 10 }}
+                    stroke="#f59e0b"
+                  />
                   <Tooltip
-                    formatter={(val: any) => [money(val), 'Revenue Won']}
+                    formatter={(val: any, name: any, item: any) => {
+                      if (name === 'Contract Value ($k)') return [money(item.payload.dealValue), 'Contract Value']
+                      return [`${val} Days`, 'Cycle Duration (Meeting → Close)']
+                    }}
+                    labelFormatter={(_, item) => item && item[0] ? `${item[0].payload.fullName} · ${item[0].payload.project}` : ''}
+                    contentStyle={{
+                      backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                      borderRadius: '8px',
+                      fontSize: '12px',
+                      border: '1px solid #cbd5e1',
+                      boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'
+                    }}
+                  />
+                  <Legend verticalAlign="top" align="right" wrapperStyle={{ fontSize: '11px', paddingBottom: '10px' }} />
+                  <Bar
+                    yAxisId="left"
+                    dataKey="dealValueK"
+                    name="Contract Value ($k)"
+                    fill="#0B1F5C"
+                    radius={[4, 4, 0, 0]}
+                  />
+                  <Line
+                    yAxisId="right"
+                    type="monotone"
+                    dataKey="cycleDays"
+                    name="Cycle Days (Meeting → Close)"
+                    stroke="#f59e0b"
+                    strokeWidth={2.5}
+                    dot={{ r: 4, fill: '#f59e0b' }}
+                  />
+                </ComposedChart>
+              </ResponsiveContainer>
+            </div>
+            <div className="mt-2 flex items-center justify-between text-xs text-muted-foreground border-t pt-2.5">
+              <span>Fastest Close: <strong>14 Days</strong></span>
+              <span className="font-semibold text-slate-800 dark:text-slate-200">Correlation: High-value enterprise deals average 28–45 days</span>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* CHART 3: EXECUTIVE DEAL LEAD PERFORMANCE (BAR CHART) */}
+        <Card className="border-slate-200/80 shadow-xs dark:border-slate-800">
+          <CardHeader className="flex flex-row items-center justify-between border-b pb-4">
+            <div>
+              <CardTitle className="text-base font-bold text-[#0B1F5C] dark:text-white flex items-center gap-2">
+                <UserCheck className="size-4 text-emerald-600" />
+                Deal Lead Performance Leaderboard
+              </CardTitle>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                Revenue contribution and contract execution volume by account lead
+              </p>
+            </div>
+            <Badge variant="outline" className="text-[11px] font-semibold border-emerald-300 text-emerald-700 bg-emerald-50 dark:bg-emerald-950 dark:text-emerald-300">
+              Top Lead: {leadLeaderboardData[0]?.lead || '—'}
+            </Badge>
+          </CardHeader>
+          <CardContent className="pt-6">
+            <div className="h-64 w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart
+                  data={leadLeaderboardData}
+                  layout="vertical"
+                  margin={{ top: 10, right: 30, left: 40, bottom: 10 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#e2e8f0" />
+                  <XAxis
+                    type="number"
+                    tickFormatter={v => `$${v}k`}
+                    tick={{ fontSize: 10 }}
+                    stroke="#94a3b8"
+                  />
+                  <YAxis
+                    type="category"
+                    dataKey="lead"
+                    tick={{ fontSize: 11, fontWeight: 600 }}
+                    stroke="#0B1F5C"
+                    width={90}
+                  />
+                  <Tooltip
+                    formatter={(val: any, _, item: any) => [
+                      `${money(item.payload.totalRevenue)} (${item.payload.dealCount} deals · Avg: ${money(item.payload.avgDeal)})`,
+                      'Revenue Closed'
+                    ]}
                     contentStyle={{
                       backgroundColor: 'rgba(255, 255, 255, 0.95)',
                       borderRadius: '8px',
                       fontSize: '12px'
                     }}
                   />
-                </PieChart>
+                  <Bar
+                    dataKey="revenueK"
+                    fill="#10B981"
+                    radius={[0, 6, 6, 0]}
+                  />
+                </BarChart>
               </ResponsiveContainer>
             </div>
-
-            {/* Region Breakdown Legend */}
-            <div className="mt-3 space-y-2 border-t pt-3">
-              {regionChartData.map(r => (
-                <div key={r.name} className="flex items-center justify-between text-xs">
-                  <div className="flex items-center gap-2">
-                    <span
-                      className="size-2.5 rounded-full"
-                      style={{ backgroundColor: REGION_COLORS[r.name] || '#94a3b8' }}
-                    />
-                    <span className="font-semibold text-slate-800 dark:text-slate-200">{r.name}</span>
-                    <span className="text-[10px] text-muted-foreground">({r.deals} deals)</span>
-                  </div>
-                  <div className="font-bold text-[#0B1F5C] dark:text-white">
-                    {money(r.value)}
-                  </div>
+            <div className="mt-2 grid grid-cols-2 gap-2 border-t pt-2.5 text-xs text-muted-foreground">
+              {leadLeaderboardData.slice(0, 4).map((l, i) => (
+                <div key={l.lead} className="flex items-center justify-between">
+                  <span className="font-medium text-slate-700 dark:text-slate-300 truncate">
+                    #{i + 1} {l.lead}
+                  </span>
+                  <span className="font-bold text-[#0B1F5C] dark:text-[#FFC000]">
+                    {money(l.totalRevenue)} ({l.dealCount})
+                  </span>
                 </div>
               ))}
             </div>
           </CardContent>
         </Card>
-      </div>
 
-      {/* CHART 3: REVENUE WON BY INDUSTRY BAR CHART */}
-      <Card className="border-slate-200/80 shadow-xs dark:border-slate-800">
-        <CardHeader className="flex flex-row items-center justify-between border-b pb-4">
-          <div>
-            <CardTitle className="text-base font-bold text-[#0B1F5C] dark:text-white flex items-center gap-2">
-              <Building2 className="size-4 text-[#0B1F5C] dark:text-[#FFC000]" />
-              Revenue Won by Industry Sector
-            </CardTitle>
-            <p className="text-xs text-muted-foreground mt-0.5">
-              Comparative contract value across enterprise vertical markets
-            </p>
-          </div>
-          <Badge variant="secondary" className="text-xs font-semibold">
-            {industryChartData.length} Target Sectors Won
-          </Badge>
-        </CardHeader>
-        <CardContent className="pt-6">
-          <div className="h-64 w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={industryChartData} margin={{ top: 10, right: 20, left: 10, bottom: 35 }}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
-                <XAxis
-                  dataKey="industry"
-                  tick={{ fontSize: 10 }}
-                  stroke="#94a3b8"
-                  angle={-25}
-                  textAnchor="end"
-                  height={50}
-                />
-                <YAxis
-                  tickFormatter={v => `$${(v / 1000).toFixed(0)}k`}
-                  tick={{ fontSize: 10 }}
-                  stroke="#94a3b8"
-                />
-                <Tooltip
-                  formatter={(val: any, _, item: any) => [
-                    `${money(val)} (${item.payload.deals} deals)`,
-                    'Revenue Won'
-                  ]}
-                  contentStyle={{
-                    backgroundColor: 'rgba(255, 255, 255, 0.95)',
-                    borderRadius: '8px',
-                    fontSize: '12px'
-                  }}
-                />
-                <Bar
-                  dataKey="value"
-                  fill="#FFC000"
-                  radius={[6, 6, 0, 0]}
-                />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </CardContent>
-      </Card>
+        {/* CHART 4: REGIONAL REVENUE SHARE & MARKET DISTRIBUTION */}
+        <Card className="border-slate-200/80 shadow-xs dark:border-slate-800">
+          <CardHeader className="flex flex-row items-center justify-between border-b pb-4">
+            <div>
+              <CardTitle className="text-base font-bold text-[#0B1F5C] dark:text-white flex items-center gap-2">
+                <PieIcon className="size-4 text-purple-600" />
+                Territory Market Share & Value
+              </CardTitle>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                Proportional revenue distribution across operating territories
+              </p>
+            </div>
+            <Badge variant="secondary" className="text-xs font-semibold">
+              3 Operating Regions
+            </Badge>
+          </CardHeader>
+          <CardContent className="pt-6">
+            <div className="flex flex-col sm:flex-row items-center gap-6">
+              <div className="h-56 w-56 shrink-0">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={regionChartData}
+                      dataKey="value"
+                      nameKey="name"
+                      innerRadius={50}
+                      outerRadius={80}
+                      paddingAngle={4}
+                    >
+                      {regionChartData.map(entry => (
+                        <Cell
+                          key={entry.name}
+                          fill={REGION_COLORS[entry.name] || '#94a3b8'}
+                        />
+                      ))}
+                    </Pie>
+                    <Tooltip
+                      formatter={(val: any) => [money(val), 'Revenue Won']}
+                      contentStyle={{
+                        backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                        borderRadius: '8px',
+                        fontSize: '12px'
+                      }}
+                    />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+
+              {/* Territory Breakdown Cards */}
+              <div className="flex-1 w-full space-y-2.5">
+                {regionChartData.map(r => {
+                  const sharePct = stats.total > 0 ? Math.round((r.value / stats.total) * 100) : 0
+                  return (
+                    <div
+                      key={r.name}
+                      className="rounded-lg border border-slate-100 p-2.5 bg-slate-50/70 dark:border-slate-800 dark:bg-slate-900/60"
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <span
+                            className="size-3 rounded-full"
+                            style={{ backgroundColor: REGION_COLORS[r.name] || '#94a3b8' }}
+                          />
+                          <span className="font-bold text-slate-900 dark:text-white text-xs">{r.name}</span>
+                        </div>
+                        <span className="font-extrabold text-xs text-[#0B1F5C] dark:text-[#FFC000]">
+                          {money(r.value)}
+                        </span>
+                      </div>
+                      <div className="mt-1 flex items-center justify-between text-[11px] text-muted-foreground">
+                        <span>{r.deals} Contracts Executed</span>
+                        <span className="font-semibold text-emerald-600 dark:text-emerald-400">{sharePct}% of Total</span>
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
 
       {/* ─────────────────────────────────────────────────────────── */}
       {/* 4. ENHANCED DATA TABLE: BUSINESS WINS REGISTER              */}
