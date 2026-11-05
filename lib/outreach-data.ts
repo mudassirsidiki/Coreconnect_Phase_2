@@ -73,6 +73,8 @@ export interface ResponseLeadRecord {
   outreachType?: 'New Outreach' | 'Follow-up'
   response: 'Positive' | 'Negative' | 'Prospect'
   actionStatus: string
+  action?: string
+  notes?: string
   industry: Industry
   region: Region
   meetingsScheduled?: string
@@ -291,6 +293,24 @@ const positiveActionStatuses = [
   'Trial Environment Active'
 ]
 
+export const positiveActions = [
+  'Send Calendar Invite & Pre-Meeting Brief',
+  'Prepare Architecture & Demo Environment',
+  'Draft Technical Scope of Work & Pricing Model',
+  'Confirm Buying Committee Attendees & Zoom Link',
+  'Circulate Enterprise Security Whitepaper',
+  'Prepare Discovery Questions & Executive Briefing'
+]
+
+export const positiveNotes = [
+  'Requested 45-min platform walk-through covering workflow automation and multi-region data security.',
+  'Confirmed team attendance for discovery meeting; interested in replacing legacy CRM tooling.',
+  'Requested follow-up architecture session with VP Engineering and Security Officer.',
+  'Executive sponsor approved POC scope; requested kickoff timeline for next month.',
+  'Requested pricing breakdown and reference case study in their industry sector.',
+  'Agreed to discovery conversation to explore CRM modernizations and revenue pipeline analytics.'
+]
+
 const prospectActionStatuses = [
   'Follow-up in 14 Days',
   'Nurture Sequence Active',
@@ -300,6 +320,24 @@ const prospectActionStatuses = [
   'Resource Material Downloaded'
 ]
 
+export const prospectActions = [
+  'Send Q4 Product Benchmark & ROI Calculator',
+  'Schedule 14-Day Nurture Follow-up Call',
+  'Follow Up via LinkedIn with Industry Case Study',
+  'Re-engage after Internal Budget Review',
+  'Share Enterprise Compliance One-Pager',
+  'Dispatch Quarterly Product Roadmap Brief'
+]
+
+export const prospectNotes = [
+  'Interested in enterprise pricing tier; reviewing internally with finance committee before scheduling call.',
+  'Confirmed receipt of overview deck; requested follow-up in 2 weeks after Q4 strategic planning.',
+  'Requested case studies on peer organizations in their sector before committing to a demo.',
+  'Expressed interest in API integrations; requested documentation for technical lead review.',
+  'In the process of evaluating vendor options; requested contact again mid-month.',
+  'Positive reception to outreach; asked for summary of implementation timelines and prerequisites.'
+]
+
 const negativeActionStatuses = [
   'Not Interested',
   'Budget Freeze',
@@ -307,6 +345,18 @@ const negativeActionStatuses = [
   'Wrong Decision Maker',
   'Do Not Contact',
   'Project Postponed to 2027'
+]
+
+export const negativeActions = [
+  'Pause Outreach & Set Q2 Re-visit Reminder',
+  'Log Competitor Intelligence & Archive Cadence',
+  'Mark DNC & Update RevOps Disqualification Log'
+]
+
+export const negativeNotes = [
+  'Budget frozen until next fiscal year; requested revisit in Q2 when new allocations open.',
+  'Currently locked in a 3-year contract with incumbent vendor; not evaluating alternatives at this time.',
+  'Reached wrong division; outreach paused and marked DNC per engagement policy.'
 ]
 
 // Generate Response Leads (High-performing outreach: 21 Positive, 6 Prospect, 3 Negative = 70% Positive Rate)
@@ -367,6 +417,8 @@ export const seedResponseLeads: ResponseLeadRecord[] = (() => {
       outreachType,
       response: 'Positive',
       actionStatus: positiveActionStatuses[i % positiveActionStatuses.length],
+      action: positiveActions[i % positiveActions.length],
+      notes: positiveNotes[i % positiveNotes.length],
       industry,
       region,
       leadOwner: leadTeamMembers[i % leadTeamMembers.length],
@@ -417,6 +469,8 @@ export const seedResponseLeads: ResponseLeadRecord[] = (() => {
       outreachType,
       response: 'Prospect',
       actionStatus: prospectActionStatuses[i % prospectActionStatuses.length],
+      action: prospectActions[i % prospectActions.length],
+      notes: prospectNotes[i % prospectNotes.length],
       industry,
       region,
       leadOwner: leadTeamMembers[(i + 1) % leadTeamMembers.length]
@@ -453,6 +507,8 @@ export const seedResponseLeads: ResponseLeadRecord[] = (() => {
       outreachType,
       response: 'Negative',
       actionStatus: negativeActionStatuses[i % negativeActionStatuses.length],
+      action: negativeActions[i % negativeActions.length],
+      notes: negativeNotes[i % negativeNotes.length],
       industry,
       region,
       leadOwner: leadTeamMembers[(i + 2) % leadTeamMembers.length]

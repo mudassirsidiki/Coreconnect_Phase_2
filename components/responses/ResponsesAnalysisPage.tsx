@@ -158,6 +158,8 @@ export function ResponsesAnalysisPage({
           r.industry.toLowerCase().includes(query) ||
           r.region.toLowerCase().includes(query) ||
           r.actionStatus.toLowerCase().includes(query) ||
+          (r.action && r.action.toLowerCase().includes(query)) ||
+          (r.notes && r.notes.toLowerCase().includes(query)) ||
           (r.meetingDetails?.agenda || '').toLowerCase().includes(query) ||
           (r.meetingDetails?.attendees || '').toLowerCase().includes(query)
         if (!match) return false
@@ -212,10 +214,8 @@ export function ResponsesAnalysisPage({
     const rows = tableFilteredLeads.map(r => {
       const record: Record<string, string> = {
         'Lead Added Date': r.leadAddedDate,
-        'Lead': r.leadOwner || leadTeamMembers[r.id % leadTeamMembers.length],
         'Account Name': r.account,
         'Point of Contact': `${r.leadName} - ${r.title}`,
-        'Response Date': r.responseDate,
         'Response Channel': r.channel
       }
       if (showMeetings) {
@@ -223,7 +223,8 @@ export function ResponsesAnalysisPage({
           ? r.meetingDetails.meetingsList.map(m => `${m.type}: ${m.date}`).join('; ')
           : (r.meetingDetails ? `${r.meetingDetails.type}: ${r.meetingDetails.meetingDate}` : 'N/A')
       }
-      record['Notes'] = r.actionStatus + (r.meetingDetails?.agenda ? ` — ${r.meetingDetails.agenda}` : '')
+      record['Notes'] = r.notes || (r.meetingDetails?.agenda ? r.meetingDetails.agenda : r.actionStatus)
+      record['Action'] = r.action || r.actionStatus
       return record
     })
     downloadCsv(`responses-analysis-${activeTab.toLowerCase()}.csv`, rows)
@@ -668,15 +669,14 @@ export function ResponsesAnalysisPage({
               <thead>
                 <tr className="border-b border-slate-200 bg-slate-50/80 text-[11px] font-bold uppercase tracking-wider text-muted-foreground dark:border-slate-800 dark:bg-slate-950/60">
                   <th className="px-4 py-3.5 whitespace-nowrap">Lead Added Date</th>
-                  <th className="px-4 py-3.5 whitespace-nowrap">Lead</th>
                   <th className="px-4 py-3.5 whitespace-nowrap">Account Name</th>
                   <th className="px-4 py-3.5 whitespace-nowrap">Point of Contact</th>
-                  <th className="px-4 py-3.5 whitespace-nowrap">Response Date</th>
                   <th className="px-4 py-3.5 whitespace-nowrap">Response Channel</th>
                   {(activeTab === 'Positive' || activeTab === 'All') && (
                     <th className="px-4 py-3.5 whitespace-nowrap">Meetings</th>
                   )}
-                  <th className="px-4 py-3.5 min-w-[220px]">Notes</th>
+                  <th className="px-4 py-3.5 min-w-[240px]">Notes</th>
+                  <th className="px-4 py-3.5 min-w-[220px]">Action</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
@@ -687,7 +687,7 @@ export function ResponsesAnalysisPage({
                       key={lead.id}
                       onClick={() => {
                         if (lead.response === 'Positive') {
-                          setSelectedMeetingBriefing(lead)
+                           setSelectedMeetingBriefing(lead)
                         } else {
                           setSelectedLeadRecord(lead)
                         }
@@ -699,14 +699,7 @@ export function ResponsesAnalysisPage({
                         {formatDate(lead.leadAddedDate)}
                       </td>
 
-                      {/* 2. Lead */}
-                      <td className="px-4 py-3.5 whitespace-nowrap text-xs">
-                        <span className="font-bold text-slate-900 dark:text-white">
-                          {lead.leadOwner || leadTeamMembers[lead.id % leadTeamMembers.length]}
-                        </span>
-                      </td>
-
-                      {/* 3. Account Name */}
+                      {/* 2. Account Name */}
                       <td className="px-4 py-3.5 font-bold text-slate-900 dark:text-white text-xs whitespace-nowrap">
                         <div className="flex items-center gap-2">
                           <div className="grid size-6 shrink-0 place-items-center rounded bg-slate-100 text-[10px] font-bold text-[#0B1F5C] dark:bg-slate-800 dark:text-slate-300 border border-slate-200/60 dark:border-slate-700">
@@ -723,7 +716,7 @@ export function ResponsesAnalysisPage({
                         </div>
                       </td>
 
-                      {/* 4. Point of Contact */}
+                      {/* 3. Point of Contact */}
                       <td className="px-4 py-3.5 whitespace-nowrap">
                         <div className="flex flex-col gap-0.5">
                           <div className="font-bold text-slate-900 dark:text-white text-xs">
@@ -735,17 +728,12 @@ export function ResponsesAnalysisPage({
                         </div>
                       </td>
 
-                      {/* 5. Response Date */}
-                      <td className="px-4 py-3.5 text-slate-700 dark:text-slate-300 whitespace-nowrap text-xs font-medium">
-                        {formatDate(lead.responseDate)}
-                      </td>
-
-                      {/* 6. Response Channel */}
+                      {/* 4. Response Channel */}
                       <td className="px-4 py-3.5 whitespace-nowrap">
                         <ChannelBadge channel={lead.channel} />
                       </td>
 
-                      {/* 7. Meetings (only for Positive & All) */}
+                      {/* 5. Meetings (only for Positive & All) */}
                       {showMeetings && (
                         <td className="px-4 py-3.5 align-top">
                           {lead.meetingDetails ? (
@@ -790,35 +778,41 @@ export function ResponsesAnalysisPage({
                         </td>
                       )}
 
-                      {/* 8. Notes */}
+                      {/* 6. Notes */}
                       <td className="px-4 py-3.5 align-top">
-                        <div className="flex flex-col gap-1">
+                        <p className="text-xs text-slate-700 dark:text-slate-300 leading-snug max-w-sm">
+                          {lead.notes || (
+                            lead.response === 'Positive'
+                              ? (lead.meetingDetails?.agenda || 'Confirmed meeting attendance and requested introductory overview.')
+                              : lead.response === 'Prospect'
+                              ? 'Interested in platform capabilities; evaluating internally with buying committee.'
+                              : 'Logged objection & outreach paused per engagement policy.'
+                          )}
+                        </p>
+                      </td>
+
+                      {/* 7. Action (Action that has to be done by our side) */}
+                      <td className="px-4 py-3.5 align-top">
+                        <div className="flex flex-col gap-1 max-w-[260px]">
                           <span
-                            className={`inline-flex w-fit items-center rounded-md px-2 py-0.5 text-[11px] font-semibold border ${
+                            className={`inline-flex items-center gap-1.5 rounded-md px-2.5 py-1 text-[11px] font-semibold border w-fit ${
                               lead.response === 'Positive'
-                                ? 'border-emerald-200 bg-emerald-50 text-emerald-800 dark:border-emerald-900 dark:bg-emerald-950 dark:text-emerald-300'
+                                ? 'border-blue-200 bg-blue-50 text-blue-800 dark:border-blue-900/60 dark:bg-blue-950/50 dark:text-blue-300'
                                 : lead.response === 'Prospect'
-                                ? 'border-amber-200 bg-amber-50 text-amber-800 dark:border-amber-900 dark:bg-amber-950 dark:text-amber-300'
-                                : 'border-rose-200 bg-rose-50 text-rose-800 dark:border-rose-900 dark:bg-rose-950 dark:text-rose-300'
+                                ? 'border-amber-200 bg-amber-50 text-amber-800 dark:border-amber-900/60 dark:bg-amber-950/50 dark:text-amber-300'
+                                : 'border-slate-200 bg-slate-100 text-slate-700 dark:border-slate-800 dark:bg-slate-800 dark:text-slate-300'
                             }`}
                           >
-                            {lead.actionStatus}
+                            <span className={`size-1.5 rounded-full shrink-0 ${
+                              lead.response === 'Positive'
+                                ? 'bg-blue-600 dark:bg-blue-400'
+                                : lead.response === 'Prospect'
+                                ? 'bg-amber-600 dark:bg-amber-400'
+                                : 'bg-slate-500'
+                            }`} />
+                            <span className="truncate">{lead.action || lead.actionStatus}</span>
                           </span>
-                          {lead.response === 'Positive' && lead.meetingDetails?.agenda && (
-                            <p className="text-[11px] text-muted-foreground leading-snug line-clamp-2" title={lead.meetingDetails.agenda}>
-                              {lead.meetingDetails.agenda}
-                            </p>
-                          )}
-                          {lead.response === 'Prospect' && (
-                            <p className="text-[11px] text-muted-foreground leading-snug">
-                              Active multi-touch nurture sequence. Awaiting follow-up response.
-                            </p>
-                          )}
-                          {lead.response === 'Negative' && (
-                            <p className="text-[11px] text-muted-foreground leading-snug">
-                              Logged objection & outreach paused per engagement policy.
-                            </p>
-                          )}
+                          <span className="text-[10px] text-muted-foreground">Team action item</span>
                         </div>
                       </td>
                     </tr>
@@ -950,6 +944,13 @@ export function ResponsesAnalysisPage({
                     {selectedMeetingBriefing.meetingDetails.location}
                   </p>
                 </div>
+
+                <div className="rounded-lg border p-3 bg-blue-50/50 dark:bg-blue-950/20 border-blue-200 dark:border-blue-900/50">
+                  <div className="text-muted-foreground text-[10px] font-semibold uppercase tracking-wider">Action by Our Side</div>
+                  <p className="mt-1 text-slate-800 dark:text-slate-200 font-bold">
+                    {selectedMeetingBriefing.action || selectedMeetingBriefing.actionStatus}
+                  </p>
+                </div>
               </div>
 
               <div className="flex gap-2 pt-2">
@@ -1018,14 +1019,16 @@ export function ResponsesAnalysisPage({
                   </Badge>
                 </div>
                 <div className="flex justify-between border-b py-2">
-                  <span className="text-muted-foreground">Action Status:</span>
-                  <span className="font-bold text-slate-800 dark:text-slate-200">
-                    {selectedLeadRecord.actionStatus}
+                  <span className="text-muted-foreground">Action by Our Side:</span>
+                  <span className="font-bold text-blue-700 dark:text-blue-300 text-right max-w-[220px]">
+                    {selectedLeadRecord.action || selectedLeadRecord.actionStatus}
                   </span>
                 </div>
                 <div className="flex justify-between border-b py-2">
-                  <span className="text-muted-foreground">Response Date:</span>
-                  <span>{formatDate(selectedLeadRecord.responseDate)}</span>
+                  <span className="text-muted-foreground">Notes:</span>
+                  <span className="text-slate-700 dark:text-slate-300 max-w-[220px] text-right">
+                    {selectedLeadRecord.notes || selectedLeadRecord.actionStatus}
+                  </span>
                 </div>
                 <div className="flex justify-between border-b py-2">
                   <span className="text-muted-foreground">Lead Added Date:</span>
