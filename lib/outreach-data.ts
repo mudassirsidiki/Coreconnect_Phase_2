@@ -93,7 +93,7 @@ const companies = [
 ]
 
 const firstNames = ['Avery', 'Jordan', 'Taylor', 'Morgan', 'Riley', 'Casey', 'Cameron', 'Quinn', 'Drew', 'Reese', 'Alex', 'Jamie', 'Skyler', 'Parker', 'Rowan']
-const lastNames = ['Miller', 'Chen', 'Patel', 'Williams', 'Garcia', 'Davies', 'Foster', 'Kim', 'O\'Connor', 'Novak']
+const lastNames = ['Miller', 'Chen', 'Anderson', 'Williams', 'Garcia', 'Davies', 'Foster', 'Kim', 'O\'Connor', 'Novak']
 const titles = ['VP of Sales', 'Chief Technology Officer', 'Head of Revenue Ops', 'VP of Procurement', 'Director of Operations', 'Head of Digital Strategy', 'Managing Director', 'Chief Information Officer']
 
 // Generate relative dates within Oct 2026 and surrounding months

@@ -23,23 +23,36 @@ export type Support = { id:number; date:string; location:string; name:string; we
 export type Conference = { id:number; date:string; status:string; category:string; description:string; actionPlan:string }
 export type Proposal = { id:number; name:string; date:string; status:'Won'|'Lost'|'Pending'; selected:boolean; researched:boolean }
 const companies = ['Meridian Bank','Northstar Health','Pinnacle Retail Group','BluePeak Energy','Atlas Telecom','Vertex Systems','Cedar Manufacturing','Summit Advisory','Harbor Logistics','BrightPath Education','Signal Media','Horizon Properties','Oakline Financial','Greenfield Clinics','Apex Commerce','Lumen Utilities','Orbit Networks','Cobalt Works','Crestview Partners','Ridgeway Transport']
-const firstNames = ['Avery','Jordan','Taylor','Morgan','Riley','Casey','Cameron','Quinn','Drew','Reese','Alex','Jamie','Skyler','Parker','Rowan']
+const firstNames = ['Avery','Jordan','Taylor','Morgan','Riley','Casey','Cameron','Quinn','Drew','Reese','Alex','Jamie','Skyler','Parker','Rowan','Bilal','Batool','Kinza','Umar','Sophia','Marcus','Elena','Liam','Zaid','Chloe']
+const lastNames = ['Miller','Chen','Williams','Garcia','Davies','Foster','Kim','Novak','Brooks','Anderson','Tahir','Fatima','Imran','Shazad','Al-Mansoor','Bennett','Rostova','Thorne','Morales','Vance']
+
+const winLeads = [
+  'Bilal Tahir',
+  'Batool Fatima',
+  'Kinza Imran',
+  'Umar Shazad',
+  'Avery Miller',
+  'Sophia Williams',
+  'Marcus Garcia',
+  'Jordan Chen'
+]
+
 const ago = (days:number) => new Date(Date.now()-days*86400000).toISOString().slice(0,10)
 export const leads: Lead[] = Array.from({length:150},(_,i)=>{
   const industry = industries[i%industries.length]
   const region = industryRegionMap[industry]
-  return { id:i+1, name:`${firstNames[i%firstNames.length]} ${['Miller','Chen','Patel','Williams','Garcia'][i%5]}`, account:companies[i%companies.length], industry, region, channel:channels[i%3], response:(['Positive','Negative','Prospect','No response'] as const)[i%4], status:statuses[i%statuses.length], date:ago((i*3)%360), responseDate:ago((i*3+1)%350), action:['Follow up','Send proposal','Schedule meeting','Nurture'][i%4] }
+  return { id:i+1, name:`${firstNames[i%firstNames.length]} ${lastNames[(i*3+2)%lastNames.length]}`, account:companies[i%companies.length], industry, region, channel:channels[i%3], response:(['Positive','Negative','Prospect','No response'] as const)[i%4], status:statuses[i%statuses.length], date:ago((i*3)%360), responseDate:ago((i*3+1)%350), action:['Follow up','Send proposal','Schedule meeting','Nurture'][i%4] }
 })
 export const meetings: Meeting[] = Array.from({length:25},(_,i)=>{
   const industry = industries[(i+2)%industries.length]
   const region = industryRegionMap[industry]
-  return { id:i+1, account:companies[(i+2)%companies.length], lead:`${firstNames[(i+3)%firstNames.length]} ${['Miller','Chen','Patel'][i%3]}`, industry, region, added:ago((i*9)%300), date:ago(-((i%20)+1)), type:i%3===0?'Follow-up':'New', status:i%4===0?'Completed':'Scheduled', comments:'Discovery conversation with buying committee.', agenda:'Business priorities and next-quarter roadmap.', attendees:'Account lead, prospect sponsor, sales manager' }
+  return { id:i+1, account:companies[(i+2)%companies.length], lead:`${firstNames[(i+3)%firstNames.length]} ${lastNames[(i*2+5)%lastNames.length]}`, industry, region, added:ago((i*9)%300), date:ago(-((i%20)+1)), type:i%3===0?'Follow-up':'New', status:i%4===0?'Completed':'Scheduled', comments:'Discovery conversation with buying committee.', agenda:'Business priorities and next-quarter roadmap.', attendees:'Account lead, prospect sponsor, sales manager' }
 })
-export const opportunities: Opportunity[] = Array.from({length:20},(_,i)=>({id:i+1,date:ago((i*13)%330),industry:industries[(i+4)%industries.length],account:companies[(i+4)%companies.length],contact:`${firstNames[i%firstNames.length]} ${['Miller','Chen','Patel'][i%3]}`,meeting:ago(-((i%16)+2)),comments:'Strong fit for the transformation program.',status:(['Won','Lost','Pending','Submitted','Researched'] as const)[i%5]}))
+export const opportunities: Opportunity[] = Array.from({length:20},(_,i)=>({id:i+1,date:ago((i*13)%330),industry:industries[(i+4)%industries.length],account:companies[(i+4)%companies.length],contact:`${firstNames[i%firstNames.length]} ${lastNames[(i*3+7)%lastNames.length]}`,meeting:ago(-((i%16)+2)),comments:'Strong fit for the transformation program.',status:(['Won','Lost','Pending','Submitted','Researched'] as const)[i%5]}))
 export const wins: Win[] = Array.from({length:15},(_,i)=>{
   const industry = industries[(i+1)%industries.length]
   const region = industryRegionMap[industry]
-  return {id:i+1,account:companies[(i+1)%companies.length],lead:`${firstNames[(i+4)%firstNames.length]} Patel`,value:35000+(i*11750),meetingDate:ago((i*11)%250),dateWon:ago((i*7)%200),region,industry,project:['Cloud modernization','Customer insights','Digital workplace'][i%3]}
+  return {id:i+1,account:companies[(i+1)%companies.length],lead:winLeads[i%winLeads.length],value:35000+(i*11750),meetingDate:ago((i*11)%250),dateWon:ago((i*7)%200),region,industry,project:['Cloud modernization','Customer insights','Digital workplace'][i%3]}
 })
 export const supportRecords: Support[] = Array.from({length:10},(_,i)=>({id:i+1,date:ago(i*15),location:['New York','London','Singapore','Sydney'][i%4],name:['CRM roundtable','Pipeline clinic','Enablement workshop'][i%3],website:'www.example.com',industry:industries[i%industries.length]}))
 export const conferences: Conference[] = Array.from({length:12},(_,i)=>({id:i+1,date:ago(i*19),status:i%3===0?'Planned':'Completed',category:['Industry','Partner','Internal'][i%3],description:'Strategic conference and relationship-building session.',actionPlan:'Share recap and assign follow-up owners.'}))
@@ -56,7 +69,7 @@ export const filterLeads = (filters:Filters) => leads.filter(l=>(!filters.indust
 export const filterMeetings = (filters:Filters) => meetings.filter(m=>(!filters.industries.length||filters.industries.includes(m.industry))&&(!filters.regions.length||filters.regions.includes(m.region))&&(filters.account==='All'||m.account===filters.account))
 export const filterWins = (filters:Filters) => wins.filter(w=>(!filters.industries.length||filters.industries.includes(w.industry))&&(!filters.regions.length||filters.regions.includes(w.region))&&(filters.account==='All'||w.account===filters.account))
 export const mediaCards = [{label:'Instagram',items:['Reels','Posts','Videos','Stories']},{label:'LinkedIn',items:['Posts','Videos','Banners','Content creation']},{label:'Proposal Management',items:['Proposal template preview']}]
-export const gtmRows = [['Segment','Message','Primary channel','Owner'],['Enterprise','Outcome-led transformation','Executive events','Avery Miller'],['Mid-market','Reduce operating friction','Email nurture','Jordan Chen'],['Strategic accounts','Co-create the future','Leadership briefings','Taylor Patel']]
+export const gtmRows = [['Segment','Message','Primary channel','Owner'],['Enterprise','Outcome-led transformation','Executive events','Avery Miller'],['Mid-market','Reduce operating friction','Email nurture','Jordan Chen'],['Strategic accounts','Co-create the future','Leadership briefings','Bilal Tahir']]
 export const emailDraft = (target:string) => `Subject: A practical growth conversation for ${target}\n\nHi there,\n\nI'm reaching out because teams in ${target} are rethinking how they turn strategic priorities into measurable outcomes. We help revenue leaders align their operating model, customer experience, and technology roadmap.\n\nWould a 20-minute conversation next week be useful?\n\nBest,\nThe Coreconnect V2 team`
 export const ratioRows = industries.flatMap((industry,i)=>regions.slice(0,4).map((region,j)=>({industry,region,opening:42+((i*7+j*5)%35),meeting:12+((i*5+j*3)%24),win:3+((i+j)%13)})))
 export const responseCounts = channels.map(channel=>({channel,Positive:leads.filter(l=>l.channel===channel&&l.response==='Positive').length,Negative:leads.filter(l=>l.channel===channel&&l.response==='Negative').length,Prospect:leads.filter(l=>l.channel===channel&&l.response==='Prospect').length}))
