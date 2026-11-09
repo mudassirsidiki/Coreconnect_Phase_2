@@ -43,3 +43,4 @@ export function AccountManagementActivitiesPage({ onBackToDashboard }: AccountMa
     </div>
   )
 }
+
