@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState, useRef } from 'react'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from 'recharts'
-import { Search, Moon, Sun, Settings, ChevronDown, Download, Plus, Filter, LayoutDashboard, Building2, TrendingUp, Activity, FileText, Presentation, Palette, Ratio, Mail, Network, Phone, CalendarDays, MoreHorizontal, Check, X, Menu, ArrowUpRight, Globe, SlidersHorizontal, Calendar, Briefcase, Send, MessageSquare, Layers, ArrowUp, ChevronRight } from 'lucide-react'
+import { Search, Moon, Sun, Settings, ChevronDown, Download, Plus, Filter, LayoutDashboard, Building2, TrendingUp, Activity, FileText, Presentation, Palette, Ratio, Mail, Network, Phone, CalendarDays, MoreHorizontal, Check, X, Menu, ArrowUpRight, Globe, SlidersHorizontal, Calendar, Briefcase, Send, MessageSquare, Layers, ArrowUp, ChevronRight, Target } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -24,6 +24,8 @@ import { RfpAnalysisPage } from '@/components/rfp/RfpAnalysisPage'
 import { ResponsesSection } from '@/components/responses/ResponsesSection'
 import { ResponsesAnalysisPage } from '@/components/responses/ResponsesAnalysisPage'
 import { RevenuePipelinePage } from '@/components/revenue/RevenuePipelinePage'
+import { GoToMarketStrategyPage } from '@/components/business-plan/GoToMarketStrategyPage'
+import { AccountManagementActivitiesPage } from '@/components/business-plan/AccountManagementActivitiesPage'
 import { type OpportunityStage } from '@/lib/opportunities-data'
 
 export const dashboardSections = [
@@ -34,7 +36,20 @@ export const dashboardSections = [
   { id: 'section-response', step: '5', tag: '5- Responses', label: 'Responses', icon: MessageSquare },
 ]
 
-type Page = typeof navItems[number] | 'Outreach Analysis' | 'Opportunities Analysis' | "RFP's Analysis" | 'Responses Analysis'
+type Page =
+  | 'Dashboard'
+  | 'Outreach Analysis'
+  | 'Opportunities Analysis'
+  | "RFP's Analysis"
+  | 'Responses Analysis'
+  | 'Go to Market Strategy'
+  | 'Revenue Pipeline & Sales'
+  | 'Account Management Activities'
+  | 'Documents'
+  | 'Proposals'
+  | 'Creative Support'
+  | 'Ratios'
+  | 'Account Business Plans'
 const icons = [LayoutDashboard, Building2, TrendingUp, Activity, FileText, Presentation, Palette, Ratio]
 const colors = ['#0B1F5C','#FFC000','#B6E4A0','#78A6D8','#E49B7A']
 
@@ -288,32 +303,61 @@ export default function Page() {
             {page === 'Responses Analysis' && <span className="size-2 rounded-full bg-[#FFC000]" />}
           </button>
 
-          {/* Workspace Modules: Account Business Plans & Revenue Pipeline & Sales */}
+          {/* Account Business Plan Section */}
           <div className="mt-4 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-blue-200/60">
-            Workspace Modules
+            Account Business Plan
           </div>
 
-          {navItems.slice(1, 3).map((item, index) => {
-            const Icon = icons[index + 1]
-            return (
-              <button
-                key={item}
-                onClick={() => {
-                  setPage(item)
-                  setMobileNav(false)
-                }}
-                className={`flex items-center gap-3 rounded-md px-3 py-2.5 text-left text-sm transition group ${
-                  page === item
-                    ? 'bg-white text-[#0B1F5C] font-semibold shadow-xs'
-                    : 'text-blue-100 hover:bg-white/10'
-                }`}
-              >
-                <Icon className="size-4 shrink-0 text-blue-200 group-hover:text-white" />
-                <span className="flex-1 truncate">{item}</span>
-                {page === item && <span className="size-2 rounded-full bg-[#FFC000]" />}
-              </button>
-            )
-          })}
+          {/* 1. Go to Market Strategy */}
+          <button
+            onClick={() => {
+              setPage('Go to Market Strategy')
+              setMobileNav(false)
+            }}
+            className={`flex items-center gap-3 rounded-md px-3 py-2.5 text-left text-sm transition group ${
+              page === 'Go to Market Strategy'
+                ? 'bg-white text-[#0B1F5C] font-semibold shadow-xs'
+                : 'text-blue-100 hover:bg-white/10'
+            }`}
+          >
+            <Target className="size-4 shrink-0 text-[#FFC000]" />
+            <span className="flex-1 truncate">Go to Market Strategy</span>
+            {page === 'Go to Market Strategy' && <span className="size-2 rounded-full bg-[#FFC000]" />}
+          </button>
+
+          {/* 2. Revenue Pipeline and Sales */}
+          <button
+            onClick={() => {
+              setPage('Revenue Pipeline & Sales')
+              setMobileNav(false)
+            }}
+            className={`flex items-center gap-3 rounded-md px-3 py-2.5 text-left text-sm transition group ${
+              page === 'Revenue Pipeline & Sales'
+                ? 'bg-white text-[#0B1F5C] font-semibold shadow-xs'
+                : 'text-blue-100 hover:bg-white/10'
+            }`}
+          >
+            <TrendingUp className="size-4 shrink-0 text-[#FFC000]" />
+            <span className="flex-1 truncate">Revenue Pipeline and Sales</span>
+            {page === 'Revenue Pipeline & Sales' && <span className="size-2 rounded-full bg-[#FFC000]" />}
+          </button>
+
+          {/* 3. Account Management Activities */}
+          <button
+            onClick={() => {
+              setPage('Account Management Activities')
+              setMobileNav(false)
+            }}
+            className={`flex items-center gap-3 rounded-md px-3 py-2.5 text-left text-sm transition group ${
+              page === 'Account Management Activities'
+                ? 'bg-white text-[#0B1F5C] font-semibold shadow-xs'
+                : 'text-blue-100 hover:bg-white/10'
+            }`}
+          >
+            <Activity className="size-4 shrink-0 text-[#FFC000]" />
+            <span className="flex-1 truncate">Account Management Activities</span>
+            {page === 'Account Management Activities' && <span className="size-2 rounded-full bg-[#FFC000]" />}
+          </button>
         </nav>
         {/* Quarter progress widget hidden per user request */}
       </aside>
@@ -415,6 +459,7 @@ export default function Page() {
             onBackToDashboard={() => setPage('Dashboard')}
           />}
           {page==='Account Business Plans'&&<BusinessPlans onBackToDashboard={()=>setPage('Dashboard')}/>}
+          {page==='Go to Market Strategy'&&<GoToMarketStrategyPage onBackToDashboard={()=>setPage('Dashboard')}/>}
           {page==='Revenue Pipeline & Sales'&&<RevenuePipelinePage
             wins={filteredWins}
             selectedIndustry={selectedIndustry}
@@ -429,7 +474,7 @@ export default function Page() {
             setDatePreset={setDatePreset}
             onBackToDashboard={()=>setPage('Dashboard')}
           />}
-          {page==='Account Management Activities'&&<Activities support={support} setSupport={setSupport} conferences={conferences} setConferences={setConferences} onBackToDashboard={()=>setPage('Dashboard')}/>}
+          {page==='Account Management Activities'&&<AccountManagementActivitiesPage onBackToDashboard={()=>setPage('Dashboard')}/>}
           {page==='Documents'&&<Documents onBackToDashboard={()=>setPage('Dashboard')}/>}
           {page==='Proposals'&&<Proposals onBackToDashboard={()=>setPage('Dashboard')}/>}
           {page==='Creative Support'&&<Creative onBackToDashboard={()=>setPage('Dashboard')}/>}

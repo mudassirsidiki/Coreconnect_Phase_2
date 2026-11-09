@@ -62,7 +62,7 @@ export const countBy = <T,>(rows:T[], key:(row:T)=>string) => rows.reduce<Record
 export const money = (value:number) => new Intl.NumberFormat('en-US',{style:'currency',currency:'USD',maximumFractionDigits:0}).format(value)
 export const csv = (rows:Record<string,unknown>[]) => { if(!rows.length)return ''; const keys=Object.keys(rows[0]); return [keys.join(','),...rows.map(r=>keys.map(k=>JSON.stringify(r[k]??'')).join(','))].join('\n') }
 export const downloadCsv = (name:string,rows:Record<string,unknown>[]) => { const blob=new Blob([csv(rows)],{type:'text/csv'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=name; a.click(); URL.revokeObjectURL(a.href) }
-export const navItems = ['Dashboard','Account Business Plans','Revenue Pipeline & Sales','Account Management Activities','Documents','Proposals','Creative Support','Ratios']
+export const navItems = ['Dashboard','Go to Market Strategy','Revenue Pipeline & Sales','Account Management Activities','Documents','Proposals','Creative Support','Ratios','Account Business Plans']
 export type Filters = { industries:string[]; regions:string[]; channel:string; response:string; status:string[]; account:string; range:string }
 export const defaultFilters: Filters = {industries:[],regions:[],channel:'All',response:'All',status:[],account:'All',range:'YTD'}
 export const filterLeads = (filters:Filters) => leads.filter(l=>(!filters.industries.length||filters.industries.includes(l.industry))&&(!filters.regions.length||filters.regions.includes(l.region))&&(filters.channel==='All'||l.channel===filters.channel)&&(filters.response==='All'||l.response===filters.response)&&(!filters.status.length||filters.status.includes(l.status))&&(filters.account==='All'||l.account===filters.account))
