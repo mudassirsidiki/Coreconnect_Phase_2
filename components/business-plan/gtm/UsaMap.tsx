@@ -256,34 +256,18 @@ export function UsaMap({ activeRegionId, onHoverRegion }: UsaMapProps) {
           })}
         </svg>
 
-        {/* Floating Tooltip */}
+        {/* Floating Tooltip (Displays location name only) */}
         {currentHoveredRegion && tooltipPos && (
           <div
-            className="pointer-events-none absolute z-30 -translate-x-1/2 -translate-y-full rounded-xl border border-slate-200 bg-white/95 px-3.5 py-2.5 shadow-xl backdrop-blur-xs transition-all dark:border-slate-700 dark:bg-slate-900/95"
+            className="pointer-events-none absolute z-30 -translate-x-1/2 -translate-y-full rounded-lg border border-slate-200/90 bg-white/95 px-3 py-1.5 shadow-lg backdrop-blur-xs transition-all dark:border-slate-700 dark:bg-slate-900/95"
             style={{
-              left: `${Math.min(Math.max(tooltipPos.x, 140), 860)}px`,
-              top: `${Math.max(tooltipPos.y - 12, 50)}px`
+              left: `${Math.min(Math.max(tooltipPos.x, 100), 880)}px`,
+              top: `${Math.max(tooltipPos.y - 12, 40)}px`
             }}
           >
-            <div className="flex items-center gap-2">
-              <span
-                className="size-3 rounded-full"
-                style={{ backgroundColor: currentHoveredRegion.color }}
-              />
-              <span className="text-xs font-bold text-[#0B1F5C] dark:text-white">
-                {currentHoveredRegion.name}
-              </span>
-              <Badge className={`${currentHoveredRegion.badgeBg} text-[10px] py-0 px-1.5`}>
-                Priority #{currentHoveredRegion.priority}
-              </Badge>
-            </div>
-            <div className="mt-1 text-[11px] text-slate-600 dark:text-slate-300">
-              <span className="font-semibold text-slate-800 dark:text-slate-200">Metros:</span>{' '}
-              {currentHoveredRegion.metroHubs}
-            </div>
-            <div className="mt-0.5 text-[10px] text-slate-400">
-              {currentHoveredRegion.description}
-            </div>
+            <span className="text-xs font-bold text-[#0B1F5C] dark:text-white whitespace-nowrap">
+              {currentHoveredRegion.name}
+            </span>
           </div>
         )}
       </div>
