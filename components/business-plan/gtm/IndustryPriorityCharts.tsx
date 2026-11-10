@@ -52,29 +52,29 @@ export function IndustryPriorityCharts() {
   return (
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 items-stretch">
       {/* ── LEFT: TARGETED INDUSTRIES (BAR CHART) ── */}
-      <div className="flex flex-col justify-between rounded-xl border border-slate-200/90 bg-gradient-to-b from-white to-slate-50/40 p-4 shadow-2xs dark:border-slate-800 dark:from-slate-900 dark:to-slate-950">
-        <div className="mb-2 flex items-center justify-between">
+      <div className="flex flex-col justify-between rounded-xl border border-slate-200/90 bg-gradient-to-b from-white to-slate-50/40 p-5 shadow-2xs dark:border-slate-800 dark:from-slate-900 dark:to-slate-950">
+        <div className="mb-3 flex items-center justify-between">
           <div>
-            <h4 className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
-              <Target className="size-3.5 text-blue-600" />
+            <h4 className="text-sm font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200 flex items-center gap-2">
+              <Target className="size-4 text-blue-600" />
               Targeted Industries with Priorities
             </h4>
-            <p className="text-[11px] text-slate-400 mt-0.5">
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
               Priority ranking and outreach weight allocation by vertical
             </p>
           </div>
-          <Badge variant="outline" className="text-[10px] text-slate-500 border-slate-200 dark:border-slate-700">
+          <Badge variant="outline" className="text-xs font-semibold text-slate-600 border-slate-300 dark:border-slate-700 dark:text-slate-300">
             Priority 1–5
           </Badge>
         </div>
 
         {/* Bar Chart */}
-        <div className="h-64 w-full">
+        <div className="h-72 w-full">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart
               data={chartData}
               layout="vertical"
-              margin={{ top: 8, right: 30, left: 30, bottom: 8 }}
+              margin={{ top: 8, right: 35, left: 10, bottom: 8 }}
               onMouseMove={(state) => {
                 if (state && state.activeLabel) {
                   setHoveredIndustry(state.activeLabel as string)
@@ -85,17 +85,17 @@ export function IndustryPriorityCharts() {
               <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#f1f5f9" className="dark:stroke-slate-800" />
               <XAxis
                 type="number"
-                domain={[0, 40]}
+                domain={[0, 42]}
                 tickFormatter={(val) => `${val}%`}
-                tick={{ fontSize: 10, fill: '#94a3b8' }}
+                tick={{ fontSize: 12, fill: '#64748b', fontWeight: 600 }}
                 stroke="#cbd5e1"
               />
               <YAxis
                 type="category"
                 dataKey="name"
-                tick={{ fontSize: 11, fontWeight: 700, fill: '#0B1F5C' }}
+                tick={{ fontSize: 13, fontWeight: 700, fill: '#0B1F5C' }}
                 stroke="#94a3b8"
-                width={130}
+                width={160}
               />
               <RechartsTooltip
                 cursor={{ fill: 'rgba(241, 245, 249, 0.4)' }}
@@ -103,30 +103,41 @@ export function IndustryPriorityCharts() {
                   if (!active || !payload || !payload.length) return null
                   const data = payload[0].payload as TargetIndustryData
                   return (
-                    <div className="rounded-xl border border-slate-200 bg-white/95 px-3 py-2 shadow-xl backdrop-blur-xs dark:border-slate-700 dark:bg-slate-900/95">
+                    <div className="rounded-xl border border-slate-200 bg-white/95 px-3.5 py-2.5 shadow-xl backdrop-blur-xs dark:border-slate-700 dark:bg-slate-900/95">
                       <div className="flex items-center gap-2">
                         <span
-                          className="size-2.5 rounded-full"
+                          className="size-3 rounded-full"
                           style={{ backgroundColor: data.color }}
                         />
-                        <span className="text-xs font-bold text-slate-900 dark:text-white">
+                        <span className="text-sm font-bold text-slate-900 dark:text-white">
                           {data.name}
                         </span>
                         <Badge
-                          className="text-[10px] font-extrabold px-1.5 py-0 shadow-xs"
+                          className="text-xs font-extrabold px-2 py-0.5 shadow-xs"
                           style={{ backgroundColor: data.color, color: '#ffffff' }}
                         >
                           Priority {data.priority}
                         </Badge>
                       </div>
-                      <div className="mt-1 text-xs font-bold text-[#0B1F5C] dark:text-blue-300">
+                      <div className="mt-1.5 text-xs font-bold text-[#0B1F5C] dark:text-blue-300">
                         Campaign Focus: {data.focusWeight}% of Total Effort
                       </div>
                     </div>
                   )
                 }}
               />
-              <Bar dataKey="focusWeight" radius={[0, 8, 8, 0]} animationDuration={700}>
+              <Bar
+                dataKey="focusWeight"
+                radius={[0, 8, 8, 0]}
+                animationDuration={700}
+                label={{
+                  position: 'right',
+                  fill: '#0B1F5C',
+                  fontSize: 12,
+                  fontWeight: 700,
+                  formatter: (val: any) => `${val}%`
+                }}
+              >
                 {chartData.map((entry) => {
                   const isHovered = hoveredIndustry === entry.name
                   return (
@@ -144,27 +155,27 @@ export function IndustryPriorityCharts() {
         </div>
 
         {/* Footnote */}
-        <div className="mt-2 flex items-center justify-between border-t border-slate-100 pt-2 text-[10px] text-slate-400 dark:border-slate-800">
+        <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2.5 text-xs text-slate-500 dark:border-slate-800 dark:text-slate-400">
           <span>Priority 1 represents top campaign resource concentration</span>
-          <span className="font-semibold text-slate-600 dark:text-slate-300">
+          <span className="font-semibold text-slate-700 dark:text-slate-300">
             Cumulative Focus: 100%
           </span>
         </div>
       </div>
 
       {/* ── RIGHT: COMPANY SIZE — NUMBER OF EMPLOYEES ── */}
-      <div className="flex flex-col justify-between rounded-xl border border-slate-200/90 bg-gradient-to-b from-white to-slate-50/40 p-4 shadow-2xs dark:border-slate-800 dark:from-slate-900 dark:to-slate-950">
-        <div className="mb-2 flex items-center justify-between">
+      <div className="flex flex-col justify-between rounded-xl border border-slate-200/90 bg-gradient-to-b from-white to-slate-50/40 p-5 shadow-2xs dark:border-slate-800 dark:from-slate-900 dark:to-slate-950">
+        <div className="mb-3 flex items-center justify-between">
           <div>
-            <h4 className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
-              <Users className="size-3.5 text-blue-600" />
+            <h4 className="text-sm font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200 flex items-center gap-2">
+              <Users className="size-4 text-blue-600" />
               Company Size — Number of Employees
             </h4>
-            <p className="text-[11px] text-slate-400 mt-0.5">
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
               Target account headcount brackets ranked by strategic priority
             </p>
           </div>
-          <Badge variant="outline" className="text-[10px] text-slate-500 border-slate-200 dark:border-slate-700">
+          <Badge variant="outline" className="text-xs font-semibold text-slate-600 border-slate-300 dark:border-slate-700 dark:text-slate-300">
             5 Priorities
           </Badge>
         </div>
@@ -174,27 +185,27 @@ export function IndustryPriorityCharts() {
           {COMPANY_SIZE_BRACKETS.map((bracket) => (
             <div
               key={bracket.range}
-              className="group flex flex-col gap-1.5 rounded-lg border border-slate-200/80 bg-white p-2.5 transition-all hover:border-slate-400 hover:shadow-xs dark:border-slate-800 dark:bg-slate-900/60"
+              className="group flex flex-col gap-1.5 rounded-lg border border-slate-200/80 bg-white p-3 transition-all hover:border-slate-400 hover:shadow-xs dark:border-slate-800 dark:bg-slate-900/60"
             >
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2.5">
                   <span
-                    className="size-2.5 rounded-full shrink-0 shadow-2xs"
+                    className="size-3 rounded-full shrink-0 shadow-2xs"
                     style={{ backgroundColor: bracket.color }}
                   />
-                  <span className="text-xs font-bold text-slate-900 dark:text-white">
+                  <span className="text-sm font-bold text-slate-900 dark:text-white">
                     {bracket.range}
                   </span>
-                  <span className="text-[10px] text-slate-400">
+                  <span className="text-xs text-slate-500">
                     employees
                   </span>
-                  <span className="text-[10px] font-medium text-slate-400 hidden sm:inline">
+                  <span className="text-xs font-medium text-slate-400 hidden sm:inline">
                     · {bracket.label}
                   </span>
                 </div>
 
                 <Badge
-                  className="text-[10px] font-extrabold px-2 py-0.5 shadow-xs"
+                  className="text-xs font-extrabold px-2.5 py-0.5 shadow-xs"
                   style={{ backgroundColor: bracket.color, color: '#ffffff' }}
                 >
                   Priority {bracket.priority}
@@ -202,7 +213,7 @@ export function IndustryPriorityCharts() {
               </div>
 
               {/* Priority Visual Progress Bar */}
-              <div className="h-1.5 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
+              <div className="h-2 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
                 <div
                   className="h-full rounded-full transition-all duration-300 group-hover:brightness-110"
                   style={{
@@ -216,9 +227,9 @@ export function IndustryPriorityCharts() {
         </div>
 
         {/* Footnote */}
-        <div className="mt-2 flex items-center justify-between border-t border-slate-100 pt-2 text-[10px] text-slate-400 dark:border-slate-800">
+        <div className="mt-2.5 flex items-center justify-between border-t border-slate-100 pt-2.5 text-xs text-slate-500 dark:border-slate-800 dark:text-slate-400">
           <span>Priority 1 targets highest agility & decision-making velocity</span>
-          <span className="font-semibold text-slate-600 dark:text-slate-300">
+          <span className="font-semibold text-slate-700 dark:text-slate-300">
             Headcount: 2 to 1000+
           </span>
         </div>
