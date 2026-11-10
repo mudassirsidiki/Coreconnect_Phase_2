@@ -281,7 +281,7 @@ export function GoToMarketStrategyPage({ onBackToDashboard }: GoToMarketStrategy
       </Card>
 
       {/* ─────────────────────────────────────────────────────────────
-          SECTION 3: TARGETED INDUSTRIES WITH PRIORITIES
+          SECTION 3: TARGETED INDUSTRIES & COMPANY SIZE
       ───────────────────────────────────────────────────────────── */}
       <Card className="border-slate-200/90 shadow-xs dark:border-slate-800">
         <CardHeader className="border-b border-slate-100 bg-slate-50/70 p-5 dark:border-slate-800/80 dark:bg-slate-900/40">
@@ -292,17 +292,20 @@ export function GoToMarketStrategyPage({ onBackToDashboard }: GoToMarketStrategy
               </span>
               <div>
                 <CardTitle className="text-base font-bold text-[#0B1F5C] dark:text-white">
-                  Targeted Industries with Priorities
+                  Targeted Industries & Company Size
                 </CardTitle>
                 <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
-                  Prioritized industry sectors and domain verticals for client engagement and sales targeting.
+                  Prioritized industry sectors and organization headcount brackets for outreach campaigns.
                 </p>
               </div>
             </div>
 
             <div className="flex items-center gap-2">
               <Badge className="bg-[#0B1F5C] text-white hover:bg-[#0B1F5C] text-xs font-bold dark:bg-blue-600">
-                5 Active Industries
+                5 Verticals
+              </Badge>
+              <Badge variant="outline" className="border-slate-300 text-slate-700 text-xs font-bold dark:border-slate-700 dark:text-slate-300">
+                5 Size Brackets
               </Badge>
             </div>
           </div>
