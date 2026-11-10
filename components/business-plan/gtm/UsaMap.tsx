@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useRef } from 'react'
 import { US_STATE_PATHS } from './usStatePaths'
 import { Badge } from '@/components/ui/badge'
 import { MapPin, CheckCircle2, Info } from 'lucide-react'
@@ -93,6 +93,7 @@ interface UsaMapProps {
 }
 
 export function UsaMap({ activeRegionId, onHoverRegion }: UsaMapProps) {
+  const containerRef = useRef<HTMLDivElement>(null)
   const [hoveredStateId, setHoveredStateId] = useState<string | null>(null)
   const [tooltipPos, setTooltipPos] = useState<{ x: number; y: number } | null>(null)
 
@@ -114,14 +115,41 @@ export function UsaMap({ activeRegionId, onHoverRegion }: UsaMapProps) {
     : null
 
   const handleMouseMove = (e: React.MouseEvent, stateId: string) => {
-    const rect = e.currentTarget.getBoundingClientRect()
-    setHoveredStateId(stateId)
-    setTooltipPos({
-      x: e.clientX - rect.left,
-      y: e.clientY - rect.top
-    })
     const reg = stateToRegionMap[stateId]
-    if (onHoverRegion) onHoverRegion(reg ? reg.id : null)
+    if (!reg) {
+      setHoveredStateId(null)
+      setTooltipPos(null)
+      if (onHoverRegion) onHoverRegion(null)
+      return
+    }
+
+    setHoveredStateId(stateId)
+    if (containerRef.current) {
+      const containerRect = containerRef.current.getBoundingClientRect()
+      const relX = e.clientX - containerRect.left
+      const relY = e.clientY - containerRect.top
+      const clampedX = Math.max(80, Math.min(relX, containerRect.width - 80))
+      setTooltipPos({
+        x: clampedX,
+        y: relY
+      })
+    }
+    if (onHoverRegion) onHoverRegion(reg.id)
+  }
+
+  const handlePinMouseMove = (e: React.MouseEvent, reg: TargetRegion) => {
+    setHoveredStateId(reg.states[0])
+    if (containerRef.current) {
+      const containerRect = containerRef.current.getBoundingClientRect()
+      const relX = e.clientX - containerRect.left
+      const relY = e.clientY - containerRect.top
+      const clampedX = Math.max(80, Math.min(relX, containerRect.width - 80))
+      setTooltipPos({
+        x: clampedX,
+        y: relY
+      })
+    }
+    if (onHoverRegion) onHoverRegion(reg.id)
   }
 
   const handleMouseLeave = () => {
@@ -151,7 +179,7 @@ export function UsaMap({ activeRegionId, onHoverRegion }: UsaMapProps) {
       </div>
 
       {/* SVG Map Container */}
-      <div className="relative w-full aspect-[960/590] max-h-[580px]">
+      <div ref={containerRef} className="relative w-full aspect-[960/590] max-h-[580px]">
         <svg
           viewBox="0 0 1000 620"
           className="size-full select-none"
@@ -218,12 +246,15 @@ export function UsaMap({ activeRegionId, onHoverRegion }: UsaMapProps) {
               <g
                 key={`pin_${reg.id}`}
                 transform={`translate(${reg.pin.x}, ${reg.pin.y})`}
-                className="pointer-events-none transition-transform duration-200"
+                className="cursor-pointer transition-transform duration-200"
                 style={{
                   transform: isHovered
                     ? `translate(${reg.pin.x}px, ${reg.pin.y}px) scale(1.15)`
                     : `translate(${reg.pin.x}px, ${reg.pin.y}px) scale(1)`
                 }}
+                onMouseEnter={(e) => handlePinMouseMove(e, reg)}
+                onMouseMove={(e) => handlePinMouseMove(e, reg)}
+                onMouseLeave={handleMouseLeave}
               >
                 {/* Glow ring */}
                 <circle
@@ -256,13 +287,15 @@ export function UsaMap({ activeRegionId, onHoverRegion }: UsaMapProps) {
           })}
         </svg>
 
-        {/* Floating Tooltip (Displays location name only) */}
+        {/* Floating Tooltip (Displays location name only, accurately positioned over target) */}
         {currentHoveredRegion && tooltipPos && (
           <div
-            className="pointer-events-none absolute z-30 -translate-x-1/2 -translate-y-full rounded-lg border border-slate-200/90 bg-white/95 px-3 py-1.5 shadow-lg backdrop-blur-xs transition-all dark:border-slate-700 dark:bg-slate-900/95"
+            className={`pointer-events-none absolute z-30 -translate-x-1/2 rounded-lg border border-slate-200/90 bg-white/95 px-3 py-1.5 shadow-lg backdrop-blur-xs transition-opacity duration-150 dark:border-slate-700 dark:bg-slate-900/95 ${
+              tooltipPos.y < 50 ? 'translate-y-3' : '-translate-y-full'
+            }`}
             style={{
-              left: `${Math.min(Math.max(tooltipPos.x, 100), 880)}px`,
-              top: `${Math.max(tooltipPos.y - 12, 40)}px`
+              left: `${tooltipPos.x}px`,
+              top: tooltipPos.y < 50 ? `${tooltipPos.y}px` : `${tooltipPos.y - 12}px`
             }}
           >
             <span className="text-xs font-bold text-[#0B1F5C] dark:text-white whitespace-nowrap">
