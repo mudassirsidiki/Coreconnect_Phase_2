@@ -120,65 +120,26 @@ export function GoToMarketStrategyPage({ onBackToDashboard }: GoToMarketStrategy
               Active Offerings & Advisory Solutions
             </div>
 
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-3 sm:grid-cols-3">
               {/* Product 1 */}
-              <div className="rounded-xl border border-slate-200/80 bg-white p-4.5 shadow-2xs hover:border-blue-300 hover:shadow-xs transition dark:border-slate-800 dark:bg-slate-900/60">
+              <div className="flex items-center justify-center rounded-xl border border-slate-200/80 bg-white p-4 shadow-2xs hover:border-blue-300 hover:shadow-xs transition dark:border-slate-800 dark:bg-slate-900/60 text-center">
                 <h4 className="text-sm font-bold text-slate-900 dark:text-white">
                   Executive Strategy & Fractional Leadership
                 </h4>
-                <p className="mt-1.5 text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-                  Interim and fractional CXO placement, executive steering committee alignment, and quarterly transformation roadmaps.
-                </p>
               </div>
 
               {/* Product 2 */}
-              <div className="rounded-xl border border-slate-200/80 bg-white p-4.5 shadow-2xs hover:border-blue-300 hover:shadow-xs transition dark:border-slate-800 dark:bg-slate-900/60">
+              <div className="flex items-center justify-center rounded-xl border border-slate-200/80 bg-white p-4 shadow-2xs hover:border-blue-300 hover:shadow-xs transition dark:border-slate-800 dark:bg-slate-900/60 text-center">
                 <h4 className="text-sm font-bold text-slate-900 dark:text-white">
                   Revenue Operations & GTM Architecture
                 </h4>
-                <p className="mt-1.5 text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-                  End-to-end sales pipeline engineering, buyer persona ICP targeting, outbound cadence design, and closing velocity metrics.
-                </p>
               </div>
 
               {/* Product 3 */}
-              <div className="rounded-xl border border-slate-200/80 bg-white p-4.5 shadow-2xs hover:border-blue-300 hover:shadow-xs transition dark:border-slate-800 dark:bg-slate-900/60">
+              <div className="flex items-center justify-center rounded-xl border border-slate-200/80 bg-white p-4 shadow-2xs hover:border-blue-300 hover:shadow-xs transition dark:border-slate-800 dark:bg-slate-900/60 text-center">
                 <h4 className="text-sm font-bold text-slate-900 dark:text-white">
-                  Board Governance, Compliance & Fiduciary Advisory
+                  Board Governance, Compliance & Advisory
                 </h4>
-                <p className="mt-1.5 text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-                  Independent director advisory, enterprise risk management (ERM), regulatory compliance frameworks, and audit readiness.
-                </p>
-              </div>
-
-              {/* Product 4 */}
-              <div className="rounded-xl border border-slate-200/80 bg-white p-4.5 shadow-2xs hover:border-blue-300 hover:shadow-xs transition dark:border-slate-800 dark:bg-slate-900/60">
-                <h4 className="text-sm font-bold text-slate-900 dark:text-white">
-                  Enterprise Modernization & Cloud Strategy
-                </h4>
-                <p className="mt-1.5 text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-                  Cloud migration roadmap, enterprise architecture modernization, ERP/CRM operational integration, and cybersecurity posture.
-                </p>
-              </div>
-
-              {/* Product 5 */}
-              <div className="rounded-xl border border-slate-200/80 bg-white p-4.5 shadow-2xs hover:border-blue-300 hover:shadow-xs transition dark:border-slate-800 dark:bg-slate-900/60">
-                <h4 className="text-sm font-bold text-slate-900 dark:text-white">
-                  Strategic M&A & Post-Merger Integration
-                </h4>
-                <p className="mt-1.5 text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-                  Commercial and operational due diligence, transaction readiness, synergy capture realization, and cultural integration.
-                </p>
-              </div>
-
-              {/* Product 6 */}
-              <div className="rounded-xl border border-slate-200/80 bg-white p-4.5 shadow-2xs hover:border-blue-300 hover:shadow-xs transition dark:border-slate-800 dark:bg-slate-900/60">
-                <h4 className="text-sm font-bold text-slate-900 dark:text-white">
-                  Executive Search & Leadership Alignment
-                </h4>
-                <p className="mt-1.5 text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-                  Tier-1 C-suite executive talent acquisition, succession strategy, compensation benchmark analysis, and team coaching.
-                </p>
               </div>
             </div>
           </div>
