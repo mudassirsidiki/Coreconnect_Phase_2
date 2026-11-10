@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react'
 import { UsaMap, TARGET_REGIONS, type TargetRegion } from './gtm/UsaMap'
+import { IndustryPriorityCharts } from './gtm/IndustryPriorityCharts'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -13,20 +14,6 @@ import {
   Briefcase,
   Printer
 } from 'lucide-react'
-
-interface TargetIndustry {
-  name: string
-  priority: number
-  color: string
-}
-
-const TARGET_INDUSTRIES: TargetIndustry[] = [
-  { name: 'Electrical', priority: 1, color: '#1D4ED8' },
-  { name: 'Mechanical', priority: 2, color: '#D97706' },
-  { name: 'Business Development', priority: 3, color: '#059669' },
-  { name: 'General Contracting', priority: 4, color: '#7C3AED' },
-  { name: 'Plumbing & Piping', priority: 5, color: '#0284C7' }
-]
 
 interface GoToMarketStrategyPageProps {
   onBackToDashboard?: () => void
@@ -322,31 +309,7 @@ export function GoToMarketStrategyPage({ onBackToDashboard }: GoToMarketStrategy
         </CardHeader>
 
         <CardContent className="p-5 sm:p-6">
-          <div className="grid gap-3.5 sm:grid-cols-2 lg:grid-cols-5">
-            {TARGET_INDUSTRIES.map((ind) => (
-              <div
-                key={ind.name}
-                className="flex flex-col justify-between rounded-xl border border-slate-200/80 bg-white p-4 shadow-2xs hover:border-blue-300 hover:shadow-xs transition dark:border-slate-800 dark:bg-slate-900/60 min-h-[96px]"
-              >
-                <div className="flex items-center justify-between gap-2 mb-2">
-                  <span
-                    className="size-2.5 rounded-full shrink-0 shadow-2xs"
-                    style={{ backgroundColor: ind.color }}
-                  />
-                  <Badge
-                    className="text-[10px] font-extrabold px-2 py-0.5 shadow-xs"
-                    style={{ backgroundColor: ind.color, color: '#ffffff' }}
-                  >
-                    Priority {ind.priority}
-                  </Badge>
-                </div>
-
-                <h4 className="text-sm font-bold text-slate-900 dark:text-white leading-snug">
-                  {ind.name}
-                </h4>
-              </div>
-            ))}
-          </div>
+          <IndustryPriorityCharts />
         </CardContent>
       </Card>
     </div>
