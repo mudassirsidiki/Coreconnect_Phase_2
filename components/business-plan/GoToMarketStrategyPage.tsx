@@ -1,93 +1,91 @@
 'use client'
 
 import React, { useState } from 'react'
-import { GtmStrategyFormData } from '@/lib/gtm-types'
-import { getInitialGtmFormData } from '@/lib/gtm-config'
-import { GtmWizardForm } from './gtm/GtmWizardForm'
-import { GtmCompletedSummary } from './gtm/GtmCompletedSummary'
+import { UsaMap, TARGET_REGIONS, type TargetRegion } from './gtm/UsaMap'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { ArrowLeft, FileText, CheckCircle2 } from 'lucide-react'
+import {
+  ArrowLeft,
+  Building2,
+  CheckCircle2,
+  FileCheck,
+  Globe2,
+  Layers,
+  MapPin,
+  Printer,
+  Sparkles,
+  Target,
+  Briefcase,
+  TrendingUp,
+  ShieldCheck,
+  Compass,
+  FileText,
+  ExternalLink,
+  Award
+} from 'lucide-react'
 
 interface GoToMarketStrategyPageProps {
   onBackToDashboard?: () => void
 }
 
 export function GoToMarketStrategyPage({ onBackToDashboard }: GoToMarketStrategyPageProps) {
-  const [formData, setFormData] = useState<GtmStrategyFormData>(() => {
-    if (typeof window !== 'undefined') {
-      try {
-        const saved = localStorage.getItem('coreconnect_gtm_draft')
-        if (saved) {
-          const parsed = JSON.parse(saved)
-          return parsed
-        }
-      } catch (err) {
-        console.error('Failed to parse saved GTM draft', err)
-      }
-    }
-    return getInitialGtmFormData()
-  })
+  const [activeRegionId, setActiveRegionId] = useState<string | null>(null)
 
-  const [viewMode, setViewMode] = useState<'wizard' | 'summary'>('wizard')
-
-  // Listen to complete event
-  const handleComplete = (completedData: GtmStrategyFormData) => {
-    setFormData(completedData)
-    setViewMode('summary')
-    window.scrollTo({ top: 0, behavior: 'smooth' })
-  }
-
-  // Return to editing
-  const handleEdit = () => {
-    setViewMode('wizard')
-    window.scrollTo({ top: 0, behavior: 'smooth' })
+  const handlePrint = () => {
+    window.print()
   }
 
   return (
-    <div className="flex flex-col gap-6">
-      {/* Top Breadcrumb Navigation */}
-      <div className="flex flex-wrap items-center justify-between gap-3 print:hidden">
+    <div className="flex flex-col gap-6 print:m-0 print:p-0">
+      {/* ─────────────────────────────────────────────────────────────
+          EXECUTIVE PAGE HEADER
+      ───────────────────────────────────────────────────────────── */}
+      <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-xs dark:border-slate-800 dark:bg-slate-900 sm:p-6 print:border-none print:shadow-none print:p-0">
         <div>
-          <div className="text-xs font-bold uppercase tracking-[.18em] text-[#b18400]">
-            Account Business Plan
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-[11px] font-extrabold uppercase tracking-widest text-[#FFC000]">
+              Account Business Plan
+            </span>
+            <span className="text-slate-300 dark:text-slate-700">•</span>
+            <Badge className="bg-[#0B1F5C] text-white hover:bg-[#0B1F5C] text-[10px] font-bold dark:bg-blue-600">
+              Company: C-Suite
+            </Badge>
+            <Badge className="bg-emerald-600 text-white hover:bg-emerald-600 text-[10px] font-semibold gap-1">
+              <CheckCircle2 className="size-3" />
+              Strategy Active & Deployed
+            </Badge>
           </div>
-          <h1 className="mt-1 text-2xl font-black text-[#0B1F5C] dark:text-white">
+
+          <h1 className="mt-2 text-2xl font-black tracking-tight text-[#0B1F5C] dark:text-white sm:text-3xl">
             Go-To-Market Strategy
           </h1>
-          <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
-            {viewMode === 'wizard'
-              ? 'Complete the structured questionnaire to build and align your ICP and outreach program.'
-              : 'Completed read-only executive strategy document mirroring the internal GTM spreadsheet.'}
+          <p className="mt-1 max-w-2xl text-xs text-slate-500 dark:text-slate-400">
+            Tailored Go-To-Market blueprint, offering catalog, and prioritized geographic territory allocation for <strong className="text-slate-700 dark:text-slate-200">C-Suite</strong>.
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
-          {viewMode === 'summary' ? (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleEdit}
-              className="gap-1.5 text-xs text-[#0B1F5C] hover:bg-blue-50 dark:text-blue-300 dark:hover:bg-slate-800"
-            >
-              <FileText className="size-3.5" />
-              Edit Questionnaire
-            </Button>
-          ) : (
-            formData.companyName && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setViewMode('summary')}
-                className="gap-1.5 text-xs"
-              >
-                <CheckCircle2 className="size-3.5 text-emerald-600" />
-                View Current Summary
-              </Button>
-            )
-          )}
+        {/* Action Controls */}
+        <div className="flex flex-wrap items-center gap-2 print:hidden">
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={handlePrint}
+            className="gap-1.5 text-xs text-slate-700 hover:text-slate-900 dark:text-slate-300"
+          >
+            <Printer className="size-3.5" />
+            Print / PDF
+          </Button>
 
           {onBackToDashboard && (
-            <Button variant="outline" size="sm" onClick={onBackToDashboard} className="gap-1.5 text-xs">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={onBackToDashboard}
+              className="gap-1.5 text-xs text-[#0B1F5C] hover:bg-blue-50 dark:text-blue-300 dark:hover:bg-slate-800"
+            >
               <ArrowLeft className="size-3.5" />
               Back to Dashboard
             </Button>
@@ -95,18 +93,313 @@ export function GoToMarketStrategyPage({ onBackToDashboard }: GoToMarketStrategy
         </div>
       </div>
 
-      {/* Main Content: Wizard or Completed Summary */}
-      {viewMode === 'wizard' ? (
-        <GtmWizardForm
-          initialData={formData}
-          onComplete={handleComplete}
-        />
-      ) : (
-        <GtmCompletedSummary
-          data={formData}
-          onEdit={handleEdit}
-        />
-      )}
+      {/* ─────────────────────────────────────────────────────────────
+          SECTION 1: PRODUCT / SERVICES (Company: C-Suite)
+      ───────────────────────────────────────────────────────────── */}
+      <Card className="border-slate-200/90 shadow-xs dark:border-slate-800">
+        <CardHeader className="border-b border-slate-100 bg-slate-50/70 p-5 dark:border-slate-800/80 dark:bg-slate-900/40">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <span className="grid size-8 place-items-center rounded-lg bg-[#0B1F5C] text-sm font-bold text-white shadow-xs dark:bg-blue-600">
+                1
+              </span>
+              <div>
+                <CardTitle className="text-base font-bold text-[#0B1F5C] dark:text-white">
+                  Products / Services
+                </CardTitle>
+                <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
+                  Target client offering profile and verified collateral asset readiness for <strong className="font-semibold text-slate-700 dark:text-slate-300">C-Suite</strong>.
+                </p>
+              </div>
+            </div>
+
+            {/* Collaterals - Yes Badge */}
+            <div className="flex items-center gap-2">
+              <Badge className="bg-emerald-600 text-white hover:bg-emerald-600 px-3 py-1 text-xs font-bold gap-1.5 shadow-xs">
+                <FileCheck className="size-4" />
+                Collaterals – Yes
+              </Badge>
+            </div>
+          </div>
+        </CardHeader>
+
+        <CardContent className="p-5 sm:p-6 flex flex-col gap-5">
+          {/* Products & Services Grid */}
+          <div>
+            <div className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3 flex items-center gap-2">
+              <Briefcase className="size-3.5 text-[#0B1F5C] dark:text-blue-400" />
+              Active Offerings & Advisory Solutions
+            </div>
+
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {/* Product 1 */}
+              <div className="rounded-xl border border-slate-200/80 bg-white p-4 shadow-2xs hover:border-blue-300 hover:shadow-xs transition dark:border-slate-800 dark:bg-slate-900/60">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="grid size-8 place-items-center rounded-lg bg-blue-50 text-[#0B1F5C] dark:bg-blue-950/60 dark:text-blue-300">
+                    <Award className="size-4" />
+                  </div>
+                  <Badge variant="secondary" className="text-[10px] bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+                    Core Solution
+                  </Badge>
+                </div>
+                <h4 className="mt-3 text-sm font-bold text-slate-900 dark:text-white">
+                  Executive Strategy & Fractional Leadership
+                </h4>
+                <p className="mt-1 text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                  Interim and fractional CXO placement, executive steering committee alignment, and quarterly transformation roadmaps.
+                </p>
+              </div>
+
+              {/* Product 2 */}
+              <div className="rounded-xl border border-slate-200/80 bg-white p-4 shadow-2xs hover:border-blue-300 hover:shadow-xs transition dark:border-slate-800 dark:bg-slate-900/60">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="grid size-8 place-items-center rounded-lg bg-amber-50 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300">
+                    <TrendingUp className="size-4" />
+                  </div>
+                  <Badge variant="secondary" className="text-[10px] bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+                    Growth & Sales
+                  </Badge>
+                </div>
+                <h4 className="mt-3 text-sm font-bold text-slate-900 dark:text-white">
+                  Revenue Operations & GTM Architecture
+                </h4>
+                <p className="mt-1 text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                  End-to-end sales pipeline engineering, buyer persona ICP targeting, outbound cadence design, and closing velocity metrics.
+                </p>
+              </div>
+
+              {/* Product 3 */}
+              <div className="rounded-xl border border-slate-200/80 bg-white p-4 shadow-2xs hover:border-blue-300 hover:shadow-xs transition dark:border-slate-800 dark:bg-slate-900/60">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="grid size-8 place-items-center rounded-lg bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300">
+                    <ShieldCheck className="size-4" />
+                  </div>
+                  <Badge variant="secondary" className="text-[10px] bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+                    Governance
+                  </Badge>
+                </div>
+                <h4 className="mt-3 text-sm font-bold text-slate-900 dark:text-white">
+                  Board Governance, Compliance & Fiduciary Advisory
+                </h4>
+                <p className="mt-1 text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                  Independent director advisory, enterprise risk management (ERM), regulatory compliance frameworks, and audit readiness.
+                </p>
+              </div>
+
+              {/* Product 4 */}
+              <div className="rounded-xl border border-slate-200/80 bg-white p-4 shadow-2xs hover:border-blue-300 hover:shadow-xs transition dark:border-slate-800 dark:bg-slate-900/60">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="grid size-8 place-items-center rounded-lg bg-purple-50 text-purple-700 dark:bg-purple-950/60 dark:text-purple-300">
+                    <Layers className="size-4" />
+                  </div>
+                  <Badge variant="secondary" className="text-[10px] bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+                    Technology
+                  </Badge>
+                </div>
+                <h4 className="mt-3 text-sm font-bold text-slate-900 dark:text-white">
+                  Enterprise Modernization & Cloud Strategy
+                </h4>
+                <p className="mt-1 text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                  Cloud migration roadmap, enterprise architecture modernization, ERP/CRM operational integration, and cybersecurity posture.
+                </p>
+              </div>
+
+              {/* Product 5 */}
+              <div className="rounded-xl border border-slate-200/80 bg-white p-4 shadow-2xs hover:border-blue-300 hover:shadow-xs transition dark:border-slate-800 dark:bg-slate-900/60">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="grid size-8 place-items-center rounded-lg bg-sky-50 text-sky-700 dark:bg-sky-950/60 dark:text-sky-300">
+                    <Compass className="size-4" />
+                  </div>
+                  <Badge variant="secondary" className="text-[10px] bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+                    Capital & M&A
+                  </Badge>
+                </div>
+                <h4 className="mt-3 text-sm font-bold text-slate-900 dark:text-white">
+                  Strategic M&A & Post-Merger Integration
+                </h4>
+                <p className="mt-1 text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                  Commercial and operational due diligence, transaction readiness, synergy capture realization, and cultural integration.
+                </p>
+              </div>
+
+              {/* Product 6 */}
+              <div className="rounded-xl border border-slate-200/80 bg-white p-4 shadow-2xs hover:border-blue-300 hover:shadow-xs transition dark:border-slate-800 dark:bg-slate-900/60">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="grid size-8 place-items-center rounded-lg bg-rose-50 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300">
+                    <Target className="size-4" />
+                  </div>
+                  <Badge variant="secondary" className="text-[10px] bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+                    Human Capital
+                  </Badge>
+                </div>
+                <h4 className="mt-3 text-sm font-bold text-slate-900 dark:text-white">
+                  Executive Search & Leadership Alignment
+                </h4>
+                <p className="mt-1 text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                  Tier-1 C-suite executive talent acquisition, succession strategy, compensation benchmark analysis, and team coaching.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Collaterals Details Callout */}
+          <div className="rounded-xl border border-emerald-200 bg-emerald-50/50 p-4 dark:border-emerald-900/60 dark:bg-emerald-950/20">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <div className="grid size-6 place-items-center rounded-full bg-emerald-600 text-white">
+                  <CheckCircle2 className="size-3.5" />
+                </div>
+                <span className="text-xs font-bold text-emerald-950 dark:text-emerald-200">
+                  Collaterals Status: Verified Available (Yes)
+                </span>
+              </div>
+              <span className="text-[11px] text-emerald-700 dark:text-emerald-300 font-medium">
+                4 Active Asset Packages Ready for Sales Engagement
+              </span>
+            </div>
+
+            <div className="mt-3 grid gap-2.5 sm:grid-cols-2 lg:grid-cols-4">
+              <div className="flex items-center gap-2 rounded-lg border border-emerald-200/70 bg-white p-2.5 text-xs font-medium text-slate-800 shadow-2xs dark:border-emerald-900/40 dark:bg-slate-900 dark:text-slate-200">
+                <FileText className="size-4 text-emerald-600 shrink-0" />
+                <span className="truncate">C-Suite Capabilities Deck (PDF)</span>
+              </div>
+              <div className="flex items-center gap-2 rounded-lg border border-emerald-200/70 bg-white p-2.5 text-xs font-medium text-slate-800 shadow-2xs dark:border-emerald-900/40 dark:bg-slate-900 dark:text-slate-200">
+                <FileText className="size-4 text-emerald-600 shrink-0" />
+                <span className="truncate">GTM Framework & Playbook</span>
+              </div>
+              <div className="flex items-center gap-2 rounded-lg border border-emerald-200/70 bg-white p-2.5 text-xs font-medium text-slate-800 shadow-2xs dark:border-emerald-900/40 dark:bg-slate-900 dark:text-slate-200">
+                <FileText className="size-4 text-emerald-600 shrink-0" />
+                <span className="truncate">Enterprise Case Studies Portfolio</span>
+              </div>
+              <div className="flex items-center gap-2 rounded-lg border border-emerald-200/70 bg-white p-2.5 text-xs font-medium text-slate-800 shadow-2xs dark:border-emerald-900/40 dark:bg-slate-900 dark:text-slate-200">
+                <FileText className="size-4 text-emerald-600 shrink-0" />
+                <span className="truncate">Executive Engagement MSA Template</span>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* ─────────────────────────────────────────────────────────────
+          SECTION 2: GEOGRAPHICAL LOCATIONS (Map + Prioritized Legend)
+      ───────────────────────────────────────────────────────────── */}
+      <Card className="border-slate-200/90 shadow-xs dark:border-slate-800">
+        <CardHeader className="border-b border-slate-100 bg-slate-50/70 p-5 dark:border-slate-800/80 dark:bg-slate-900/40">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <span className="grid size-8 place-items-center rounded-lg bg-[#0B1F5C] text-sm font-bold text-white shadow-xs dark:bg-blue-600">
+                2
+              </span>
+              <div>
+                <CardTitle className="text-base font-bold text-[#0B1F5C] dark:text-white">
+                  Geographical Locations
+                </CardTitle>
+                <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
+                  Target market deployment across the United States. Highlighted regions reflect prioritized sales campaigns.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <Badge variant="outline" className="border-blue-300 bg-blue-50/60 text-[#0B1F5C] dark:border-blue-900 dark:bg-blue-950/40 dark:text-blue-300 text-xs font-semibold">
+                Country: USA
+              </Badge>
+              <Badge className="bg-[#FFC000] text-[#0B1F5C] hover:bg-[#FFC000] text-xs font-bold shadow-xs">
+                5 Priority Clusters
+              </Badge>
+            </div>
+          </div>
+        </CardHeader>
+
+        <CardContent className="p-5 sm:p-6 flex flex-col gap-6">
+          {/* Visual Interactive Map */}
+          <div>
+            <UsaMap
+              activeRegionId={activeRegionId}
+              onHoverRegion={setActiveRegionId}
+            />
+          </div>
+
+          {/* Prioritized Legend Below the Map */}
+          <div>
+            <div className="mb-3 flex items-center justify-between">
+              <div>
+                <h3 className="text-sm font-bold text-[#0B1F5C] dark:text-white">
+                  Target Locations & Priority Ranking Legend
+                </h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400">
+                  Hover or inspect each prioritized territory to highlight its coverage on the map above.
+                </p>
+              </div>
+
+              <span className="text-xs font-medium text-slate-400 hidden sm:inline">
+                Ranked by strategic priority (#1 is primary)
+              </span>
+            </div>
+
+            {/* 5 Location Legend Cards */}
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+              {TARGET_REGIONS.map((region) => {
+                const isSelected = activeRegionId === region.id
+                return (
+                  <div
+                    key={region.id}
+                    onMouseEnter={() => setActiveRegionId(region.id)}
+                    onMouseLeave={() => setActiveRegionId(null)}
+                    className={`relative flex flex-col justify-between rounded-xl border p-4 transition-all duration-200 cursor-pointer ${
+                      isSelected
+                        ? 'border-slate-900 bg-slate-50 shadow-md scale-[1.02] dark:border-white dark:bg-slate-800'
+                        : 'border-slate-200 bg-white hover:border-slate-400 hover:shadow-xs dark:border-slate-800 dark:bg-slate-900/70'
+                    }`}
+                  >
+                    <div>
+                      {/* Priority Pill & Color Dot */}
+                      <div className="flex items-center justify-between gap-1 mb-2">
+                        <div className="flex items-center gap-1.5">
+                          <span
+                            className="size-3 rounded-full shrink-0 shadow-2xs"
+                            style={{ backgroundColor: region.color }}
+                          />
+                          <span className="text-[11px] font-bold text-slate-500">
+                            Rank #{region.priority}
+                          </span>
+                        </div>
+
+                        <Badge
+                          className="text-[10px] font-extrabold px-1.5 py-0 shadow-xs"
+                          style={{ backgroundColor: region.color, color: '#ffffff' }}
+                        >
+                          Priority {region.priority}
+                        </Badge>
+                      </div>
+
+                      {/* Location Name */}
+                      <h4 className="text-xs font-bold text-slate-900 dark:text-white leading-snug">
+                        {region.name}
+                      </h4>
+
+                      {/* Description */}
+                      <p className="mt-1 text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
+                        {region.description}
+                      </p>
+                    </div>
+
+                    {/* Metros & Coverage */}
+                    <div className="mt-3 border-t border-slate-100 pt-2.5 text-[10px] dark:border-slate-800">
+                      <div className="font-semibold text-slate-700 dark:text-slate-300">
+                        Target Metros:
+                      </div>
+                      <div className="text-slate-500 dark:text-slate-400 truncate mt-0.5" title={region.metroHubs}>
+                        {region.metroHubs}
+                      </div>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   )
 }

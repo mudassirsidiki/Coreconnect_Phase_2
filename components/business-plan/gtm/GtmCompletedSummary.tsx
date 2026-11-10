@@ -200,11 +200,11 @@ export function GtmCompletedSummary({ data, onEdit }: GtmCompletedSummaryProps) 
       ...(data.focusedAccounts.decideLater
         ? [['6. FOCUSED ACCOUNTS', 'Decide Later', '', 'Client requested to review and assign focused accounts at a later stage']]
         : data.focusedAccounts.accounts.map((acc) => [
-            '6. FOCUSED ACCOUNTS',
-            acc.companyName,
-            '',
-            `Comments: ${acc.comments} | Target Projects: ${acc.targetProjects}`
-          ])),
+          '6. FOCUSED ACCOUNTS',
+          acc.companyName,
+          '',
+          `Comments: ${acc.comments} | Target Projects: ${acc.targetProjects}`
+        ])),
 
       // Section 7: Outreach
       ...(data.outreach.email.enabled ? [['7. OUTREACH STRATEGY', 'Email Cadence', '', data.outreach.email.details]] : []),
