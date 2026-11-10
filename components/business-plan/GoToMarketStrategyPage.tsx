@@ -7,22 +7,11 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import {
   ArrowLeft,
-  Building2,
   CheckCircle2,
   FileCheck,
-  Globe2,
-  Layers,
-  MapPin,
-  Printer,
-  Sparkles,
-  Target,
-  Briefcase,
-  TrendingUp,
-  ShieldCheck,
-  Compass,
   FileText,
-  ExternalLink,
-  Award
+  Briefcase,
+  Printer
 } from 'lucide-react'
 
 interface GoToMarketStrategyPageProps {
@@ -133,109 +122,61 @@ export function GoToMarketStrategyPage({ onBackToDashboard }: GoToMarketStrategy
 
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {/* Product 1 */}
-              <div className="rounded-xl border border-slate-200/80 bg-white p-4 shadow-2xs hover:border-blue-300 hover:shadow-xs transition dark:border-slate-800 dark:bg-slate-900/60">
-                <div className="flex items-start justify-between gap-2">
-                  <div className="grid size-8 place-items-center rounded-lg bg-blue-50 text-[#0B1F5C] dark:bg-blue-950/60 dark:text-blue-300">
-                    <Award className="size-4" />
-                  </div>
-                  <Badge variant="secondary" className="text-[10px] bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300">
-                    Core Solution
-                  </Badge>
-                </div>
-                <h4 className="mt-3 text-sm font-bold text-slate-900 dark:text-white">
+              <div className="rounded-xl border border-slate-200/80 bg-white p-4.5 shadow-2xs hover:border-blue-300 hover:shadow-xs transition dark:border-slate-800 dark:bg-slate-900/60">
+                <h4 className="text-sm font-bold text-slate-900 dark:text-white">
                   Executive Strategy & Fractional Leadership
                 </h4>
-                <p className="mt-1 text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                <p className="mt-1.5 text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
                   Interim and fractional CXO placement, executive steering committee alignment, and quarterly transformation roadmaps.
                 </p>
               </div>
 
               {/* Product 2 */}
-              <div className="rounded-xl border border-slate-200/80 bg-white p-4 shadow-2xs hover:border-blue-300 hover:shadow-xs transition dark:border-slate-800 dark:bg-slate-900/60">
-                <div className="flex items-start justify-between gap-2">
-                  <div className="grid size-8 place-items-center rounded-lg bg-amber-50 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300">
-                    <TrendingUp className="size-4" />
-                  </div>
-                  <Badge variant="secondary" className="text-[10px] bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300">
-                    Growth & Sales
-                  </Badge>
-                </div>
-                <h4 className="mt-3 text-sm font-bold text-slate-900 dark:text-white">
+              <div className="rounded-xl border border-slate-200/80 bg-white p-4.5 shadow-2xs hover:border-blue-300 hover:shadow-xs transition dark:border-slate-800 dark:bg-slate-900/60">
+                <h4 className="text-sm font-bold text-slate-900 dark:text-white">
                   Revenue Operations & GTM Architecture
                 </h4>
-                <p className="mt-1 text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                <p className="mt-1.5 text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
                   End-to-end sales pipeline engineering, buyer persona ICP targeting, outbound cadence design, and closing velocity metrics.
                 </p>
               </div>
 
               {/* Product 3 */}
-              <div className="rounded-xl border border-slate-200/80 bg-white p-4 shadow-2xs hover:border-blue-300 hover:shadow-xs transition dark:border-slate-800 dark:bg-slate-900/60">
-                <div className="flex items-start justify-between gap-2">
-                  <div className="grid size-8 place-items-center rounded-lg bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300">
-                    <ShieldCheck className="size-4" />
-                  </div>
-                  <Badge variant="secondary" className="text-[10px] bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300">
-                    Governance
-                  </Badge>
-                </div>
-                <h4 className="mt-3 text-sm font-bold text-slate-900 dark:text-white">
+              <div className="rounded-xl border border-slate-200/80 bg-white p-4.5 shadow-2xs hover:border-blue-300 hover:shadow-xs transition dark:border-slate-800 dark:bg-slate-900/60">
+                <h4 className="text-sm font-bold text-slate-900 dark:text-white">
                   Board Governance, Compliance & Fiduciary Advisory
                 </h4>
-                <p className="mt-1 text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                <p className="mt-1.5 text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
                   Independent director advisory, enterprise risk management (ERM), regulatory compliance frameworks, and audit readiness.
                 </p>
               </div>
 
               {/* Product 4 */}
-              <div className="rounded-xl border border-slate-200/80 bg-white p-4 shadow-2xs hover:border-blue-300 hover:shadow-xs transition dark:border-slate-800 dark:bg-slate-900/60">
-                <div className="flex items-start justify-between gap-2">
-                  <div className="grid size-8 place-items-center rounded-lg bg-purple-50 text-purple-700 dark:bg-purple-950/60 dark:text-purple-300">
-                    <Layers className="size-4" />
-                  </div>
-                  <Badge variant="secondary" className="text-[10px] bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300">
-                    Technology
-                  </Badge>
-                </div>
-                <h4 className="mt-3 text-sm font-bold text-slate-900 dark:text-white">
+              <div className="rounded-xl border border-slate-200/80 bg-white p-4.5 shadow-2xs hover:border-blue-300 hover:shadow-xs transition dark:border-slate-800 dark:bg-slate-900/60">
+                <h4 className="text-sm font-bold text-slate-900 dark:text-white">
                   Enterprise Modernization & Cloud Strategy
                 </h4>
-                <p className="mt-1 text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                <p className="mt-1.5 text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
                   Cloud migration roadmap, enterprise architecture modernization, ERP/CRM operational integration, and cybersecurity posture.
                 </p>
               </div>
 
               {/* Product 5 */}
-              <div className="rounded-xl border border-slate-200/80 bg-white p-4 shadow-2xs hover:border-blue-300 hover:shadow-xs transition dark:border-slate-800 dark:bg-slate-900/60">
-                <div className="flex items-start justify-between gap-2">
-                  <div className="grid size-8 place-items-center rounded-lg bg-sky-50 text-sky-700 dark:bg-sky-950/60 dark:text-sky-300">
-                    <Compass className="size-4" />
-                  </div>
-                  <Badge variant="secondary" className="text-[10px] bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300">
-                    Capital & M&A
-                  </Badge>
-                </div>
-                <h4 className="mt-3 text-sm font-bold text-slate-900 dark:text-white">
+              <div className="rounded-xl border border-slate-200/80 bg-white p-4.5 shadow-2xs hover:border-blue-300 hover:shadow-xs transition dark:border-slate-800 dark:bg-slate-900/60">
+                <h4 className="text-sm font-bold text-slate-900 dark:text-white">
                   Strategic M&A & Post-Merger Integration
                 </h4>
-                <p className="mt-1 text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                <p className="mt-1.5 text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
                   Commercial and operational due diligence, transaction readiness, synergy capture realization, and cultural integration.
                 </p>
               </div>
 
               {/* Product 6 */}
-              <div className="rounded-xl border border-slate-200/80 bg-white p-4 shadow-2xs hover:border-blue-300 hover:shadow-xs transition dark:border-slate-800 dark:bg-slate-900/60">
-                <div className="flex items-start justify-between gap-2">
-                  <div className="grid size-8 place-items-center rounded-lg bg-rose-50 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300">
-                    <Target className="size-4" />
-                  </div>
-                  <Badge variant="secondary" className="text-[10px] bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300">
-                    Human Capital
-                  </Badge>
-                </div>
-                <h4 className="mt-3 text-sm font-bold text-slate-900 dark:text-white">
+              <div className="rounded-xl border border-slate-200/80 bg-white p-4.5 shadow-2xs hover:border-blue-300 hover:shadow-xs transition dark:border-slate-800 dark:bg-slate-900/60">
+                <h4 className="text-sm font-bold text-slate-900 dark:text-white">
                   Executive Search & Leadership Alignment
                 </h4>
-                <p className="mt-1 text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                <p className="mt-1.5 text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
                   Tier-1 C-suite executive talent acquisition, succession strategy, compensation benchmark analysis, and team coaching.
                 </p>
               </div>

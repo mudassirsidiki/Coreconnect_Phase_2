@@ -301,3 +301,4 @@ export function UsaMap({ activeRegionId, onHoverRegion }: UsaMapProps) {
     </div>
   )
 }
+
