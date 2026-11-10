@@ -2,7 +2,10 @@
 
 import React, { useState } from 'react'
 import { UsaMap, TARGET_REGIONS, type TargetRegion } from './gtm/UsaMap'
-import { IndustryPriorityCharts } from './gtm/IndustryPriorityCharts'
+import {
+  TargetedIndustriesChart,
+  CompanySizeBrackets
+} from './gtm/IndustryPriorityCharts'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -281,40 +284,71 @@ export function GoToMarketStrategyPage({ onBackToDashboard }: GoToMarketStrategy
       </Card>
 
       {/* ─────────────────────────────────────────────────────────────
-          SECTION 3: TARGETED INDUSTRIES & COMPANY SIZE
+          SECTION 3 & 4: TARGETED INDUSTRIES & COMPANY SIZE
       ───────────────────────────────────────────────────────────── */}
-      <Card className="border-slate-200/90 shadow-xs dark:border-slate-800">
-        <CardHeader className="border-b border-slate-100 bg-slate-50/70 p-5 dark:border-slate-800/80 dark:bg-slate-900/40">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <div className="flex items-center gap-3">
-              <span className="grid size-8 place-items-center rounded-lg bg-[#0B1F5C] text-sm font-bold text-white shadow-xs dark:bg-blue-600">
-                3
-              </span>
-              <div>
-                <CardTitle className="text-base font-bold text-[#0B1F5C] dark:text-white">
-                  Targeted Industries & Company Size
-                </CardTitle>
-                <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
-                  Prioritized industry sectors and organization headcount brackets for outreach campaigns.
-                </p>
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 items-stretch">
+        {/* ── SECTION 3: TARGETED INDUSTRIES WITH PRIORITIES ── */}
+        <Card className="border-slate-200/90 shadow-xs dark:border-slate-800 flex flex-col justify-between">
+          <CardHeader className="border-b border-slate-100 bg-slate-50/70 p-5 dark:border-slate-800/80 dark:bg-slate-900/40">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <span className="grid size-8 place-items-center rounded-lg bg-[#0B1F5C] text-sm font-bold text-white shadow-xs dark:bg-blue-600">
+                  3
+                </span>
+                <div>
+                  <CardTitle className="text-base font-bold text-[#0B1F5C] dark:text-white">
+                    Targeted Industries with Priorities
+                  </CardTitle>
+                  <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
+                    Prioritized industry sectors and domain verticals for client engagement.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <Badge className="bg-[#0B1F5C] text-white hover:bg-[#0B1F5C] text-xs font-bold dark:bg-blue-600">
+                  5 Verticals
+                </Badge>
               </div>
             </div>
+          </CardHeader>
 
-            <div className="flex items-center gap-2">
-              <Badge className="bg-[#0B1F5C] text-white hover:bg-[#0B1F5C] text-xs font-bold dark:bg-blue-600">
-                5 Verticals
-              </Badge>
-              <Badge variant="outline" className="border-slate-300 text-slate-700 text-xs font-bold dark:border-slate-700 dark:text-slate-300">
-                5 Size Brackets
-              </Badge>
+          <CardContent className="p-5 sm:p-6 flex flex-col justify-between flex-1">
+            <TargetedIndustriesChart />
+          </CardContent>
+        </Card>
+
+        {/* ── SECTION 4: COMPANY SIZE — NUMBER OF EMPLOYEES ── */}
+        <Card className="border-slate-200/90 shadow-xs dark:border-slate-800 flex flex-col justify-between">
+          <CardHeader className="border-b border-slate-100 bg-slate-50/70 p-5 dark:border-slate-800/80 dark:bg-slate-900/40">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <span className="grid size-8 place-items-center rounded-lg bg-[#0B1F5C] text-sm font-bold text-white shadow-xs dark:bg-blue-600">
+                  4
+                </span>
+                <div>
+                  <CardTitle className="text-base font-bold text-[#0B1F5C] dark:text-white">
+                    Company Size — Number of Employees
+                  </CardTitle>
+                  <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
+                    Target account headcount brackets ranked by strategic priority.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <Badge className="bg-[#0B1F5C] text-white hover:bg-[#0B1F5C] text-xs font-bold dark:bg-blue-600">
+                  5 Priorities
+                </Badge>
+              </div>
             </div>
-          </div>
-        </CardHeader>
+          </CardHeader>
 
-        <CardContent className="p-5 sm:p-6">
-          <IndustryPriorityCharts />
-        </CardContent>
-      </Card>
+          <CardContent className="p-5 sm:p-6 flex flex-col justify-between flex-1">
+            <CompanySizeBrackets />
+          </CardContent>
+        </Card>
+      </div>
     </div>
   )
 }
