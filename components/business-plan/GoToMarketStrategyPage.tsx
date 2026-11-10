@@ -14,6 +14,20 @@ import {
   Printer
 } from 'lucide-react'
 
+interface TargetIndustry {
+  name: string
+  priority: number
+  color: string
+}
+
+const TARGET_INDUSTRIES: TargetIndustry[] = [
+  { name: 'Electrical', priority: 1, color: '#1D4ED8' },
+  { name: 'Mechanical', priority: 2, color: '#D97706' },
+  { name: 'Business Development', priority: 3, color: '#059669' },
+  { name: 'General Contracting', priority: 4, color: '#7C3AED' },
+  { name: 'Plumbing & Piping', priority: 5, color: '#0284C7' }
+]
+
 interface GoToMarketStrategyPageProps {
   onBackToDashboard?: () => void
 }
@@ -275,6 +289,63 @@ export function GoToMarketStrategyPage({ onBackToDashboard }: GoToMarketStrategy
                 onHoverRegion={setActiveRegionId}
               />
             </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* ─────────────────────────────────────────────────────────────
+          SECTION 3: TARGETED INDUSTRIES WITH PRIORITIES
+      ───────────────────────────────────────────────────────────── */}
+      <Card className="border-slate-200/90 shadow-xs dark:border-slate-800">
+        <CardHeader className="border-b border-slate-100 bg-slate-50/70 p-5 dark:border-slate-800/80 dark:bg-slate-900/40">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <span className="grid size-8 place-items-center rounded-lg bg-[#0B1F5C] text-sm font-bold text-white shadow-xs dark:bg-blue-600">
+                3
+              </span>
+              <div>
+                <CardTitle className="text-base font-bold text-[#0B1F5C] dark:text-white">
+                  Targeted Industries with Priorities
+                </CardTitle>
+                <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
+                  Prioritized industry sectors and domain verticals for client engagement and sales targeting.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <Badge className="bg-[#0B1F5C] text-white hover:bg-[#0B1F5C] text-xs font-bold dark:bg-blue-600">
+                5 Active Industries
+              </Badge>
+            </div>
+          </div>
+        </CardHeader>
+
+        <CardContent className="p-5 sm:p-6">
+          <div className="grid gap-3.5 sm:grid-cols-2 lg:grid-cols-5">
+            {TARGET_INDUSTRIES.map((ind) => (
+              <div
+                key={ind.name}
+                className="flex flex-col justify-between rounded-xl border border-slate-200/80 bg-white p-4 shadow-2xs hover:border-blue-300 hover:shadow-xs transition dark:border-slate-800 dark:bg-slate-900/60 min-h-[96px]"
+              >
+                <div className="flex items-center justify-between gap-2 mb-2">
+                  <span
+                    className="size-2.5 rounded-full shrink-0 shadow-2xs"
+                    style={{ backgroundColor: ind.color }}
+                  />
+                  <Badge
+                    className="text-[10px] font-extrabold px-2 py-0.5 shadow-xs"
+                    style={{ backgroundColor: ind.color, color: '#ffffff' }}
+                  >
+                    Priority {ind.priority}
+                  </Badge>
+                </div>
+
+                <h4 className="text-sm font-bold text-slate-900 dark:text-white leading-snug">
+                  {ind.name}
+                </h4>
+              </div>
+            ))}
           </div>
         </CardContent>
       </Card>
