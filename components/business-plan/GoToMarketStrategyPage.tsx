@@ -213,91 +213,92 @@ export function GoToMarketStrategyPage({ onBackToDashboard }: GoToMarketStrategy
           </div>
         </CardHeader>
 
-        <CardContent className="p-5 sm:p-6 flex flex-col gap-6">
-          {/* Visual Interactive Map */}
-          <div>
-            <UsaMap
-              activeRegionId={activeRegionId}
-              onHoverRegion={setActiveRegionId}
-            />
-          </div>
-
-          {/* Prioritized Legend Below the Map */}
-          <div>
-            <div className="mb-3 flex items-center justify-between">
+        <CardContent className="p-5 sm:p-6">
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-12 items-start">
+            {/* ── LEFT COLUMN: Target Locations & Priority Ranking Legend (Vertical) ── */}
+            <div className="flex flex-col gap-3 lg:col-span-5 xl:col-span-4">
               <div>
-                <h3 className="text-sm font-bold text-[#0B1F5C] dark:text-white">
-                  Target Locations & Priority Ranking Legend
-                </h3>
-                <p className="text-xs text-slate-500 dark:text-slate-400">
-                  Hover or inspect each prioritized territory to highlight its coverage on the map above.
+                <div className="flex items-center justify-between gap-2">
+                  <h3 className="text-sm font-bold text-[#0B1F5C] dark:text-white">
+                    Target Locations & Priority Ranking Legend
+                  </h3>
+                  <Badge variant="outline" className="text-[10px] font-semibold text-slate-500 border-slate-200 dark:border-slate-700">
+                    5 Hubs
+                  </Badge>
+                </div>
+                <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
+                  Hover or inspect each prioritized territory to highlight its coverage on the map.
                 </p>
               </div>
 
-              <span className="text-xs font-medium text-slate-400 hidden sm:inline">
-                Ranked by strategic priority (#1 is primary)
-              </span>
-            </div>
+              {/* 5 Location Legend Cards (Vertical Stack) */}
+              <div className="flex flex-col gap-2.5">
+                {TARGET_REGIONS.map((region) => {
+                  const isSelected = activeRegionId === region.id
+                  return (
+                    <div
+                      key={region.id}
+                      onMouseEnter={() => setActiveRegionId(region.id)}
+                      onMouseLeave={() => setActiveRegionId(null)}
+                      className={`relative flex flex-col justify-between rounded-xl border p-3.5 transition-all duration-200 cursor-pointer ${
+                        isSelected
+                          ? 'border-slate-900 bg-slate-50 shadow-md scale-[1.01] dark:border-white dark:bg-slate-800'
+                          : 'border-slate-200/90 bg-white hover:border-slate-400 hover:shadow-xs dark:border-slate-800 dark:bg-slate-900/70'
+                      }`}
+                    >
+                      <div>
+                        {/* Priority Pill & Color Dot */}
+                        <div className="flex items-center justify-between gap-1 mb-1.5">
+                          <div className="flex items-center gap-1.5">
+                            <span
+                              className="size-2.5 rounded-full shrink-0 shadow-2xs"
+                              style={{ backgroundColor: region.color }}
+                            />
+                            <span className="text-[11px] font-bold text-slate-500">
+                              Rank #{region.priority}
+                            </span>
+                          </div>
 
-            {/* 5 Location Legend Cards */}
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
-              {TARGET_REGIONS.map((region) => {
-                const isSelected = activeRegionId === region.id
-                return (
-                  <div
-                    key={region.id}
-                    onMouseEnter={() => setActiveRegionId(region.id)}
-                    onMouseLeave={() => setActiveRegionId(null)}
-                    className={`relative flex flex-col justify-between rounded-xl border p-4 transition-all duration-200 cursor-pointer ${
-                      isSelected
-                        ? 'border-slate-900 bg-slate-50 shadow-md scale-[1.02] dark:border-white dark:bg-slate-800'
-                        : 'border-slate-200 bg-white hover:border-slate-400 hover:shadow-xs dark:border-slate-800 dark:bg-slate-900/70'
-                    }`}
-                  >
-                    <div>
-                      {/* Priority Pill & Color Dot */}
-                      <div className="flex items-center justify-between gap-1 mb-2">
-                        <div className="flex items-center gap-1.5">
-                          <span
-                            className="size-3 rounded-full shrink-0 shadow-2xs"
-                            style={{ backgroundColor: region.color }}
-                          />
-                          <span className="text-[11px] font-bold text-slate-500">
-                            Rank #{region.priority}
-                          </span>
+                          <Badge
+                            className="text-[10px] font-extrabold px-1.5 py-0 shadow-xs"
+                            style={{ backgroundColor: region.color, color: '#ffffff' }}
+                          >
+                            Priority {region.priority}
+                          </Badge>
                         </div>
 
-                        <Badge
-                          className="text-[10px] font-extrabold px-1.5 py-0 shadow-xs"
-                          style={{ backgroundColor: region.color, color: '#ffffff' }}
-                        >
-                          Priority {region.priority}
-                        </Badge>
+                        {/* Location Name */}
+                        <h4 className="text-xs font-bold text-slate-900 dark:text-white leading-snug">
+                          {region.name}
+                        </h4>
+
+                        {/* Description */}
+                        <p className="mt-1 text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
+                          {region.description}
+                        </p>
                       </div>
 
-                      {/* Location Name */}
-                      <h4 className="text-xs font-bold text-slate-900 dark:text-white leading-snug">
-                        {region.name}
-                      </h4>
-
-                      {/* Description */}
-                      <p className="mt-1 text-[11px] text-slate-500 dark:text-slate-400 leading-relaxed">
-                        {region.description}
-                      </p>
-                    </div>
-
-                    {/* Metros & Coverage */}
-                    <div className="mt-3 border-t border-slate-100 pt-2.5 text-[10px] dark:border-slate-800">
-                      <div className="font-semibold text-slate-700 dark:text-slate-300">
-                        Target Metros:
-                      </div>
-                      <div className="text-slate-500 dark:text-slate-400 truncate mt-0.5" title={region.metroHubs}>
-                        {region.metroHubs}
+                      {/* Metros & Coverage */}
+                      <div className="mt-2.5 border-t border-slate-100 pt-2 text-[10px] dark:border-slate-800">
+                        <span className="font-semibold text-slate-700 dark:text-slate-300">
+                          Target Metros:
+                        </span>{' '}
+                        <span className="text-slate-500 dark:text-slate-400" title={region.metroHubs}>
+                          {region.metroHubs}
+                        </span>
                       </div>
                     </div>
-                  </div>
-                )
-              })}
+                  )
+                })}
+              </div>
+            </div>
+
+            {/* ── RIGHT COLUMN: Visual Interactive USA Map ── */}
+            <div className="lg:col-span-7 xl:col-span-8">
+              <UsaMap
+                activeRegionId={activeRegionId}
+                onHoverRegion={setActiveRegionId}
+              />
             </div>
           </div>
         </CardContent>
