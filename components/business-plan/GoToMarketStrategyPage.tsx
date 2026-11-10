@@ -15,8 +15,65 @@ import {
   FileCheck,
   FileText,
   Briefcase,
-  Printer
+  Printer,
+  UserCheck,
+  Calculator,
+  HardHat,
+  Compass,
+  Mail,
+  PhoneCall
 } from 'lucide-react'
+
+const TARGET_JOB_TITLES = [
+  {
+    title: 'Project Manager',
+    category: 'Operations & Execution Lead',
+    icon: UserCheck
+  },
+  {
+    title: 'Estimators',
+    category: 'Cost Estimation & Commercial Bidding',
+    icon: Calculator
+  },
+  {
+    title: 'Pre-construction Manager',
+    category: 'Pre-construction Planning & Strategy',
+    icon: HardHat
+  },
+  {
+    title: 'Project Engineer',
+    category: 'Technical Engineering & MEP Coordination',
+    icon: Compass
+  }
+]
+
+const OUTREACH_CHANNELS = [
+  {
+    name: 'Email',
+    description: 'Personalized multi-touch cold & warm email cadences',
+    icon: Mail,
+    bgColor: '#EFF6FF',
+    iconColor: '#1D4ED8'
+  },
+  {
+    name: 'LinkedIn',
+    description: 'Executive InMail, connection requests & social touchpoints',
+    icon: (props: React.SVGProps<SVGSVGElement>) => (
+      <svg viewBox="0 0 24 24" fill="currentColor" {...props}>
+        <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.46 8.76a1.53 1.53 0 0 0 1.53-1.53c0-.85-.68-1.54-1.53-1.54-.85 0-1.54.69-1.54 1.54 0 .85.69 1.53 1.54 1.53m1.39 9.97v-8.37H5.07v8.37h2.78Z" />
+      </svg>
+    ),
+    bgColor: '#F0F9FF',
+    iconColor: '#0284C7'
+  },
+  {
+    name: 'Calls',
+    description: 'Direct discovery calls, qualification & follow-up cadences',
+    icon: PhoneCall,
+    bgColor: '#F5F3FF',
+    iconColor: '#7C3AED'
+  }
+]
 
 interface GoToMarketStrategyPageProps {
   onBackToDashboard?: () => void
@@ -346,6 +403,139 @@ export function GoToMarketStrategyPage({ onBackToDashboard }: GoToMarketStrategy
 
           <CardContent className="p-5 sm:p-6 flex flex-col justify-between flex-1">
             <CompanySizeBrackets />
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* ─────────────────────────────────────────────────────────────
+          SECTION 5 & 6: TARGETED JOB TITLES & OUTREACH STRATEGY
+      ───────────────────────────────────────────────────────────── */}
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2 items-stretch">
+        {/* ── SECTION 5: TARGETED JOB TITLES ── */}
+        <Card className="border-slate-200/90 shadow-xs dark:border-slate-800 flex flex-col justify-between">
+          <CardHeader className="border-b border-slate-100 bg-slate-50/70 p-5 dark:border-slate-800/80 dark:bg-slate-900/40">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <span className="grid size-8 place-items-center rounded-lg bg-[#0B1F5C] text-sm font-bold text-white shadow-xs dark:bg-blue-600">
+                  5
+                </span>
+                <div>
+                  <CardTitle className="text-base font-bold text-[#0B1F5C] dark:text-white">
+                    Targeted Job Titles
+                  </CardTitle>
+                  <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
+                    Key decision-maker and influencer personas targeted across active campaigns.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <Badge className="bg-[#0B1F5C] text-white hover:bg-[#0B1F5C] text-xs font-bold dark:bg-blue-600">
+                  4 Focus Personas
+                </Badge>
+              </div>
+            </div>
+          </CardHeader>
+
+          <CardContent className="p-5 sm:p-6 flex flex-col justify-between flex-1 gap-4">
+            {/* 4 Job Titles Grid (No Priorities) */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 my-auto py-1">
+              {TARGET_JOB_TITLES.map((job) => (
+                <div
+                  key={job.title}
+                  className="flex items-center gap-3 rounded-xl border border-slate-200/80 bg-white p-3.5 shadow-2xs transition-all hover:border-blue-300 hover:shadow-xs dark:border-slate-800 dark:bg-slate-900/60"
+                >
+                  <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-[#0B1F5C] dark:bg-blue-950/60 dark:text-blue-300">
+                    <job.icon className="size-4.5" />
+                  </div>
+                  <div className="min-w-0">
+                    <h4 className="text-sm font-bold text-slate-900 dark:text-white leading-snug">
+                      {job.title}
+                    </h4>
+                    <span className="text-[11px] font-medium text-slate-400">
+                      {job.category}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Footnote */}
+            <div className="flex items-center justify-between border-t border-slate-100 pt-2.5 text-xs text-slate-500 dark:border-slate-800 dark:text-slate-400">
+              <span>Verified decision-maker roles in active account targeting</span>
+              <span className="font-semibold text-slate-700 dark:text-slate-300">
+                Persona Coverage: 100%
+              </span>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* ── SECTION 6: OUTREACH STRATEGY ── */}
+        <Card className="border-slate-200/90 shadow-xs dark:border-slate-800 flex flex-col justify-between">
+          <CardHeader className="border-b border-slate-100 bg-slate-50/70 p-5 dark:border-slate-800/80 dark:bg-slate-900/40">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <span className="grid size-8 place-items-center rounded-lg bg-[#0B1F5C] text-sm font-bold text-white shadow-xs dark:bg-blue-600">
+                  6
+                </span>
+                <div>
+                  <CardTitle className="text-base font-bold text-[#0B1F5C] dark:text-white">
+                    Outreach Strategy
+                  </CardTitle>
+                  <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
+                    Coordinated multi-touch engagement channels for pipeline acceleration.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <Badge className="bg-[#0B1F5C] text-white hover:bg-[#0B1F5C] text-xs font-bold dark:bg-blue-600">
+                  3 Active Channels
+                </Badge>
+              </div>
+            </div>
+          </CardHeader>
+
+          <CardContent className="p-5 sm:p-6 flex flex-col justify-between flex-1 gap-4">
+            {/* 3 Channels */}
+            <div className="flex flex-col gap-2.5 my-auto py-1">
+              {OUTREACH_CHANNELS.map((ch) => (
+                <div
+                  key={ch.name}
+                  className="flex items-center justify-between rounded-xl border border-slate-200/80 bg-white p-3 shadow-2xs transition-all hover:border-blue-300 hover:shadow-xs dark:border-slate-800 dark:bg-slate-900/60"
+                >
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div
+                      className="flex size-9 shrink-0 items-center justify-center rounded-lg shadow-2xs"
+                      style={{ backgroundColor: ch.bgColor, color: ch.iconColor }}
+                    >
+                      <ch.icon className="size-4.5" />
+                    </div>
+                    <div>
+                      <h4 className="text-sm font-bold text-slate-900 dark:text-white leading-snug">
+                        {ch.name}
+                      </h4>
+                      <p className="text-[11px] text-slate-400">
+                        {ch.description}
+                      </p>
+                    </div>
+                  </div>
+
+                  <Badge className="bg-emerald-50 text-emerald-700 border border-emerald-200/80 hover:bg-emerald-50 text-[11px] font-bold gap-1.5 shrink-0 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800">
+                    <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                    Active
+                  </Badge>
+                </div>
+              ))}
+            </div>
+
+            {/* Footnote */}
+            <div className="flex items-center justify-between border-t border-slate-100 pt-2.5 text-xs text-slate-500 dark:border-slate-800 dark:text-slate-400">
+              <span>Multi-touch cadence sequence (Email + Social + Voice)</span>
+              <span className="font-semibold text-slate-700 dark:text-slate-300">
+                Touchpoints: Omnichannel
+              </span>
+            </div>
           </CardContent>
         </Card>
       </div>
