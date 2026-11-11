@@ -366,17 +366,17 @@ export function GoToMarketStrategyPage({ onBackToDashboard }: GoToMarketStrategy
                 </span>
                 <div>
                   <CardTitle className="text-base font-bold text-[#0B1F5C] dark:text-white">
-                    Targeted Job Titles
+                    Targeted Job Titles with Priorities
                   </CardTitle>
                   <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
-                    Key decision-maker and influencer personas targeted across active campaigns.
+                    Key decision-maker personas ranked by campaign priority & resource allocation.
                   </p>
                 </div>
               </div>
 
               <div className="flex items-center gap-2">
                 <Badge className="bg-[#0B1F5C] text-white hover:bg-[#0B1F5C] text-xs font-bold dark:bg-blue-600">
-                  4 Focus Personas
+                  4 Priority Tiers
                 </Badge>
               </div>
             </div>
