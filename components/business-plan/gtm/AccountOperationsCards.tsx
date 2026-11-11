@@ -21,16 +21,16 @@ export function WeeklyMeetingCard() {
   const meetingSlots = [
     {
       id: 'friday',
-      time: 'Friday Afternoon',
+      time: 'Friday Afternoon - 2:00 PM EST',
       label: 'Weekly Wrap-up & Review',
       gradient: 'from-blue-600 to-indigo-600',
       icon: CalendarClock,
-      badgeText: 'Friday Slot',
+      badgeText: '2:00 PM EST',
       badgeColor: 'bg-blue-50 text-blue-700 border-blue-200/80 dark:bg-blue-950/40 dark:text-blue-300 dark:border-blue-800'
     },
     {
       id: 'tuesday',
-      time: 'Tuesday - 10:30 EST',
+      time: 'Tuesday - 10:30 AM EST',
       label: 'Pipeline & Sprint Huddle',
       gradient: 'from-violet-600 to-purple-700',
       icon: CalendarDays,
@@ -211,3 +211,4 @@ export function UpcomingConferencesCard() {
     </div>
   )
 }
+
