@@ -9,6 +9,11 @@ import {
 import { TargetedPersonasCard } from './gtm/TargetedPersonasCard'
 import { OutreachStrategyCard } from './gtm/OutreachStrategyCard'
 import { CrmStrategyCard } from './gtm/CrmStrategyCard'
+import {
+  WeeklyMeetingCard,
+  PointOfContactCard,
+  UpcomingConferencesCard
+} from './gtm/AccountOperationsCards'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -438,6 +443,104 @@ export function GoToMarketStrategyPage({ onBackToDashboard }: GoToMarketStrategy
 
           <CardContent className="p-5 sm:p-6 flex flex-col justify-between flex-1">
             <OutreachStrategyCard />
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* ─────────────────────────────────────────────────────────────
+          SECTIONS 7, 8 & 9: WEEKLY MEETING, POINT OF CONTACT & CONFERENCES
+      ───────────────────────────────────────────────────────────── */}
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3 items-stretch">
+        {/* ── SECTION 7: WEEKLY MEETING TIME ── */}
+        <Card className="border-slate-200/90 shadow-xs dark:border-slate-800 flex flex-col justify-between">
+          <CardHeader className="border-b border-slate-100 bg-slate-50/70 p-5 dark:border-slate-800/80 dark:bg-slate-900/40">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <span className="grid size-8 place-items-center rounded-lg bg-[#0B1F5C] text-sm font-bold text-white shadow-xs dark:bg-blue-600">
+                  7
+                </span>
+                <div>
+                  <CardTitle className="text-base font-bold text-[#0B1F5C] dark:text-white">
+                    Weekly Meeting Time
+                  </CardTitle>
+                  <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
+                    Recurring review cadences for account alignment.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <Badge className="bg-[#0B1F5C] text-white hover:bg-[#0B1F5C] text-xs font-bold dark:bg-blue-600">
+                  2 Slots
+                </Badge>
+              </div>
+            </div>
+          </CardHeader>
+
+          <CardContent className="p-5 sm:p-6 flex flex-col justify-between flex-1">
+            <WeeklyMeetingCard />
+          </CardContent>
+        </Card>
+
+        {/* ── SECTION 8: POINT OF CONTACT ── */}
+        <Card className="border-slate-200/90 shadow-xs dark:border-slate-800 flex flex-col justify-between">
+          <CardHeader className="border-b border-slate-100 bg-slate-50/70 p-5 dark:border-slate-800/80 dark:bg-slate-900/40">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <span className="grid size-8 place-items-center rounded-lg bg-[#0B1F5C] text-sm font-bold text-white shadow-xs dark:bg-blue-600">
+                  8
+                </span>
+                <div>
+                  <CardTitle className="text-base font-bold text-[#0B1F5C] dark:text-white">
+                    Point of Contact
+                  </CardTitle>
+                  <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
+                    Designated account lead and liaison.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <Badge className="bg-[#0B1F5C] text-white hover:bg-[#0B1F5C] text-xs font-bold dark:bg-blue-600">
+                  Primary Lead
+                </Badge>
+              </div>
+            </div>
+          </CardHeader>
+
+          <CardContent className="p-5 sm:p-6 flex flex-col justify-between flex-1">
+            <PointOfContactCard />
+          </CardContent>
+        </Card>
+
+        {/* ── SECTION 9: UPCOMING CONFERENCES / TRADE SHOWS ── */}
+        <Card className="border-slate-200/90 shadow-xs dark:border-slate-800 flex flex-col justify-between">
+          <CardHeader className="border-b border-slate-100 bg-slate-50/70 p-5 dark:border-slate-800/80 dark:bg-slate-900/40">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <span className="grid size-8 place-items-center rounded-lg bg-[#0B1F5C] text-sm font-bold text-white shadow-xs dark:bg-blue-600">
+                  9
+                </span>
+                <div>
+                  <CardTitle className="text-base font-bold text-[#0B1F5C] dark:text-white">
+                    Upcoming Conferences / Trade Shows
+                  </CardTitle>
+                  <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
+                    Industry events & in-person target market engagement.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <Badge className="bg-[#0B1F5C] text-white hover:bg-[#0B1F5C] text-xs font-bold dark:bg-blue-600">
+                  3 Events
+                </Badge>
+              </div>
+            </div>
+          </CardHeader>
+
+          <CardContent className="p-5 sm:p-6 flex flex-col justify-between flex-1">
+            <UpcomingConferencesCard />
           </CardContent>
         </Card>
       </div>
