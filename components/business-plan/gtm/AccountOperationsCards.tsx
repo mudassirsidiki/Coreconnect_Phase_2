@@ -21,7 +21,7 @@ export function WeeklyMeetingCard() {
   const meetingSlots = [
     {
       id: 'friday',
-      time: 'Friday Afternoon - 2:00 PM EST',
+      time: 'Friday - 2:00 PM EST',
       label: 'Weekly Wrap-up & Review',
       gradient: 'from-blue-600 to-indigo-600',
       icon: CalendarClock,
