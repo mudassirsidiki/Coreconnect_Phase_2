@@ -195,26 +195,13 @@ export function GoToMarketStrategyPage({ onBackToDashboard }: GoToMarketStrategy
         {/* ── CRM CARD (Right side of Product and Service) ── */}
         <Card className="border-slate-200/90 shadow-xs dark:border-slate-800 flex flex-col justify-between">
           <CardHeader className="border-b border-slate-100 bg-slate-50/70 p-5 dark:border-slate-800/80 dark:bg-slate-900/40">
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <div className="flex items-center gap-3">
-                <span className="grid size-8 place-items-center rounded-lg bg-[#0B1F5C] text-sm font-bold text-white shadow-xs dark:bg-blue-600">
-                  <Database className="size-4 text-white" />
-                </span>
-                <div>
-                  <CardTitle className="text-base font-bold text-[#0B1F5C] dark:text-white">
-                    CRM
-                  </CardTitle>
-                  <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
-                    Customer relationship management and sales pipeline platform.
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <Badge className="bg-[#FF7A59] text-white hover:bg-[#FF7A59] text-xs font-bold shadow-xs">
-                  HubSpot
-                </Badge>
-              </div>
+            <div className="flex items-center gap-3">
+              <span className="grid size-8 place-items-center rounded-lg bg-[#0B1F5C] text-sm font-bold text-white shadow-xs dark:bg-blue-600">
+                <Database className="size-4 text-white" />
+              </span>
+              <CardTitle className="text-base font-bold text-[#0B1F5C] dark:text-white">
+                CRM
+              </CardTitle>
             </div>
           </CardHeader>
 
