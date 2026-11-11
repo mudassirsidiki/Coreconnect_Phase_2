@@ -1,16 +1,12 @@
 'use client'
 
 import React from 'react'
-import {
-  FileSpreadsheet,
-  ArrowRight,
-  Database
-} from 'lucide-react'
+import { FileSpreadsheet } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
 
 export function CrmStrategyCard() {
   return (
-    <div className="flex flex-col justify-between h-full gap-4">
+    <div className="flex flex-col justify-center h-full gap-4 py-2 my-auto">
       {/* ── TOP HERO: HUBSPOT SHOWCASE ── */}
       <div className="flex items-center justify-between gap-3 rounded-2xl border border-orange-200/80 bg-gradient-to-br from-orange-50/70 via-white to-amber-50/40 p-4 shadow-2xs dark:border-orange-950/60 dark:from-orange-950/20 dark:via-slate-900 dark:to-slate-900">
         <div className="flex items-center gap-3.5 min-w-0">
@@ -26,24 +22,21 @@ export function CrmStrategyCard() {
               <h3 className="text-base font-bold text-slate-900 dark:text-white leading-snug">
                 HubSpot
               </h3>
-              <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">
-                · Target CRM
-              </span>
             </div>
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 truncate">
-              Going to HubSpot for pipeline & contact automation
+              Going to HubSpot
             </p>
           </div>
         </div>
 
         <Badge className="bg-[#FF7A59] text-white hover:bg-[#FF7A59] text-xs font-bold px-2.5 py-1 shrink-0 shadow-xs">
-          Target System
+          Going to HubSpot
         </Badge>
       </div>
 
       {/* ── MIDDLE: CURRENT PROTOCOL DESCRIPTION ── */}
       <div className="rounded-2xl border border-slate-200/90 bg-white p-4 shadow-2xs dark:border-slate-800 dark:bg-slate-900/60">
-        <div className="flex items-center justify-between gap-2 mb-2">
+        <div className="flex items-center justify-between gap-2 mb-1.5">
           <div className="flex items-center gap-2">
             <div className="grid size-7 place-items-center rounded-lg bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 shrink-0">
               <FileSpreadsheet className="size-4" />
@@ -52,45 +45,11 @@ export function CrmStrategyCard() {
               (Use Excel For Now)
             </h4>
           </div>
-
-          <Badge
-            variant="outline"
-            className="text-[10px] font-bold border-emerald-300 text-emerald-700 bg-emerald-50 dark:border-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300"
-          >
-            Active Database
-          </Badge>
         </div>
 
         <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
           Lead tracking, prospect pipeline stages, and contact records are currently managed in standardized Excel spreadsheets prior to full HubSpot CRM integration.
         </p>
-
-        {/* 2-Step Migration Pathway Pill Strip */}
-        <div className="mt-3 flex items-center justify-between gap-2 rounded-xl bg-slate-50 p-2.5 border border-slate-100 dark:bg-slate-800/60 dark:border-slate-800">
-          <div className="flex items-center gap-2 min-w-0">
-            <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span className="text-xs font-bold text-slate-700 dark:text-slate-300 truncate">
-              Current: Excel Workbook
-            </span>
-          </div>
-
-          <ArrowRight className="size-3.5 text-slate-400 shrink-0" />
-
-          <div className="flex items-center gap-2 min-w-0">
-            <span className="size-2 rounded-full bg-[#FF7A59]" />
-            <span className="text-xs font-bold text-[#FF7A59] truncate">
-              Destination: HubSpot CRM
-            </span>
-          </div>
-        </div>
-      </div>
-
-      {/* ── FOOTNOTE ── */}
-      <div className="flex items-center justify-between border-t border-slate-100 pt-2.5 text-xs text-slate-500 dark:border-slate-800 dark:text-slate-400">
-        <span>Staged pipeline setup · HubSpot data schema ready</span>
-        <span className="font-semibold text-slate-700 dark:text-slate-300">
-          Target: HubSpot
-        </span>
       </div>
     </div>
   )
