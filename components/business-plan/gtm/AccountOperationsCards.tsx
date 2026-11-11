@@ -101,14 +101,9 @@ export function PointOfContactCard() {
             </div>
 
             <div className="min-w-0">
-              <div className="flex items-center gap-2">
-                <h4 className="text-base font-bold text-slate-900 dark:text-white leading-snug">
-                  Sebastien
-                </h4>
-              </div>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 font-medium">
-                Primary Account Lead & GTM Strategist
-              </p>
+              <h4 className="text-base font-bold text-slate-900 dark:text-white leading-snug">
+                Sebastien
+              </h4>
             </div>
           </div>
 
